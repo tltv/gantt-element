@@ -1,5 +1,4 @@
 import { LitElement, html, css, property, customElement } from 'lit-element';
-import { toDate, format } from 'date-fns-tz';
 import { GanttElement } from './gantt-element';
 import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
 import { GanttSubStepsBase } from './gantt-substeps-base';
@@ -8,48 +7,6 @@ import { GanttSubStepsBase } from './gantt-substeps-base';
 export class GanttStepElement extends GanttSubStepsBase {
 
     static RESIZE_WIDTH: number = 10
-
-    @property({ reflect: true }) public caption: string;
-    @property({ reflect: true }) public resizable: boolean = true;
-    @property({ reflect: true }) public movable: boolean = true;
-    /* Unique id. if not given, uid will match position automatically. Substep gets prefix from owner uid: <owner.uid>-<uid> */
-    @property() public uid: string;
-
-    /* Inclusive start Date (millisecond accuracy) */
-    @property({
-        reflect: true,
-        converter: {
-            fromAttribute: (value: string, type) => {
-                return toDate(value);
-            },
-            toAttribute: (value: Date, type) => {
-                return format(value, "yyyy-MM-dd'T'HH:mm:ss");
-            }
-        }
-    })
-    public start: Date;
-    /* Inclusive end Date (millisecond accuracy) */
-    @property({
-        reflect: true,
-        converter: {
-            fromAttribute: (value: string, type) => {
-                return toDate(value);
-            },
-            toAttribute: (value: Date, type) => {
-                return format(value, "yyyy-MM-dd'T'HH:mm:ss");
-            }
-        }
-    })
-    public end: Date;
-
-    @property() public backgroundColor = "#fff";
-    @property() public stepWidth = "0px";
-    @property() public stepLeft = "0px";
-    @property() public stepHeight = "30px";
-    @property() public position: number;
-    @property({ reflect: true }) public resizing: boolean;
-    @property({ reflect: true }) public moving: boolean;
-
 
     static get styles() {
         return css`
@@ -145,10 +102,8 @@ export class GanttStepElement extends GanttSubStepsBase {
     }
 
     update(changedProperties: any) {
-        if (changedProperties.has("start")) {
+        if (changedProperties.has("start") || changedProperties.has("end")) {
             this.recalculateLeft();
-        }
-        if (changedProperties.has("end")) {
             this.recalculateWidth();
         }
         if (changedProperties.has('position')) {
@@ -186,13 +141,15 @@ export class GanttStepElement extends GanttSubStepsBase {
         this.getGanttElement().getTimeline()
             .then(timeline => {
                 if (this.substep) {
-                    let ownerStepWidth: number = ElementUtil.getWidth(this.owner);
-                    this.stepLeft = timeline.getLeftPositionPercentageStringForDateRange(this.start, ownerStepWidth, this.owner.start, this.owner.end);
+                    this.calculateSubStepLeft(timeline).then(newLeft => {
+                        this.stepLeft = newLeft;
+                        this.updateLeft();
+                    });
                 } else {
                     this.stepLeft = timeline.getLeftPositionPercentageStringForDate(this.start, this.getGanttElement().getContentWidth());
+                    this._substeps.forEach(substep => substep.refresh());
+                    this.updateLeft();
                 }
-                this.style.setProperty('--gantt-step-left', this.stepLeft);
-                this.style.removeProperty("left");
             });
     }
 
@@ -200,23 +157,22 @@ export class GanttStepElement extends GanttSubStepsBase {
         this.getGanttElement().getTimeline()
             .then(timeline => {
                 if (this.substep) {
-                    let range: number = this.owner.end.getTime() - this.owner.start.getTime();
-                    this.stepWidth = timeline.getWidthPercentageStringForDateIntervalForRange(this.end.getTime() - this.start.getTime(), range);
+                    this.calculateSubStepWidth(timeline).then(newWidth => {
+                        this.stepWidth = newWidth;
+                        this.updateWidth();
+                    });
                 } else {
                     this.stepWidth = timeline.getWidthPercentageStringForDateInterval(this.end.getTime() - this.start.getTime());
+                    this._substeps.forEach(substep => substep.refresh());
+                    this.updateWidth();
                 }
-                this.style.setProperty('--gantt-step-width', this.stepWidth);
-                this.style.removeProperty("width");
+                
             });
     }
 
     public refresh() {
         this.recalculateLeft();
         this.recalculateWidth();
-    }
-
-    public getStepHeight(): number {
-        return parseInt(this.stepHeight, 10);
     }
 
     public getGanttElement(): GanttElement {
@@ -233,5 +189,5 @@ export class GanttStepElement extends GanttSubStepsBase {
     private _handleMouseDown(event: MouseEvent) {
         this.getGanttElement().handleMouseDown(event);
     }
-
+    
 }

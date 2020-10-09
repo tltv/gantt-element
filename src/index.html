@@ -26,6 +26,23 @@
     <script>
       document.getElementById("gantt").addEventListener("ganttStepMove", function(event) {
         console.log("Received ganttStepMove event");
+
+        if(event.detail.step.substep) {
+          // update owner by changed sub-step
+          if(event.detail.step.owner.start > event.detail.step.start) {
+            event.detail.step.owner.start = event.detail.step.start;
+          } else if(event.detail.step.owner.end < event.detail.step.end) {
+            event.detail.step.owner.end = event.detail.step.end;
+          }
+        } else if(event.detail.step.hasSubSteps()) {
+          // update sub-steps by moved owner
+          let previousStart = Math.min(...event.detail.step.getSubSteps().map(substep => substep.start.getTime()));
+          let delta = event.detail.step.start - previousStart;
+          event.detail.step.getSubSteps().forEach(substep => { 
+            substep.start = new Date(substep.start.getTime() + delta);
+            substep.end = new Date(substep.end.getTime() + delta);
+          });
+        }
       });
       document.getElementById("gantt").addEventListener("ganttStepResize", function(event) {
         console.log("Received ganttStepResize event");
