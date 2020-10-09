@@ -264,6 +264,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     if (step.substep) {
       left += step.owner.offsetLeft;
     }
+    left -= this._container.scrollLeft;
+
     this.moveElement.style.left = left + "px";
     this.moveElement.style.width = step.clientWidth + "px";
     this.moveElement.style.height = this._ganttContainer.clientHeight + "px";
