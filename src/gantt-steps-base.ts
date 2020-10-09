@@ -5,6 +5,7 @@ import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
 
 export interface GanttStepsInterface {
     _steps: Array<GanttStepElement>;
+    _ganttContainer: HTMLDivElement;
     _container: HTMLDivElement;
     _content: HTMLDivElement;
     getContentWidth(): number;
@@ -16,13 +17,17 @@ export interface GanttStepsInterface {
 export class GanttStepsBase extends LitElement implements GanttStepsInterface {
 
     _steps: Array<GanttStepElement>;
-    @query('#container')
-    _container: HTMLDivElement;
-    @query('#content')
-    _content: HTMLDivElement;
+    
+    @query('#gantt-container') _ganttContainer: HTMLDivElement;
+    @query('#container') _container: HTMLDivElement;
+    @query('#content') _content: HTMLDivElement;
 
     public getContentWidth() {
         return ElementUtil.getWidth(this.getContent());
+    }
+
+    public getContentHeight() {
+        return ElementUtil.getHeight(this.getContent());
     }
 
     public getContent() {
@@ -94,4 +99,7 @@ export class GanttStepsBase extends LitElement implements GanttStepsInterface {
         return v >= min && v <= max;
     }
 
+    public getSteps(): Array<GanttStepElement> {
+        return this._steps;
+    }
 }

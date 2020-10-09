@@ -1,5 +1,5 @@
 import { LitElement, html, css, property, customElement } from 'lit-element';
-import { query, queryAssignedNodes } from 'lit-element/lib/decorators.js';
+import { query } from 'lit-element/lib/decorators.js';
 import { zonedTimeToUtc, utcToZonedTime, toDate, format } from 'date-fns-tz';
 import { parse, getISOWeek } from 'date-fns';
 import { Resolution } from 'tltv-timeline-element/src/model/Resolution';
@@ -15,10 +15,11 @@ import { GanttStepElement } from './gantt-step-element';
 import * as GanttUtil from './util/ganttUtil';
 import './gantt-step-element.ts';
 import { GanttEventsBase } from './gantt-events-base';
+import { BackgroundGridMixin } from './css-background-grid-mixin';
 
 
 @customElement('gantt-element')
-export class GanttElement extends GanttEventsBase {
+export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
 
   @property({ 
     reflect: true,
@@ -68,6 +69,7 @@ export class GanttElement extends GanttEventsBase {
   // TODO enable when typescript supports ResizeObserver
   // _resizeObserver = new ResizeObserver(entries => {
   //   this._timeline.updateWidths();
+  //   this.updateContainerStyle();
   //   this.updateContentWidth();
   // });
 
@@ -75,14 +77,39 @@ export class GanttElement extends GanttEventsBase {
     return css`
       :host {
         display: block;
+
+        --grid-line-color: #eee;
+      }
+
+      #gantt-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        user-select: none;
+        overflow: hidden;
       }
 
       #container {
         position: relative;
         width: 100%;
         height: 100%;
-        overflow-x: auto;
         user-select: none;
+        
+        background: var(--grid-line-color);
+        /* Webkit (Safari/Chrome 10) */
+        background: -webkit-gradient(linear, left top, right top, color-stop(1px, var(--grid-line-color)), color-stop(0, transparent)), -webkit-gradient(linear, left top, left bottom, color-stop(1px, var(--grid-line-color)), color-stop(0, transparent));
+        /* Webkit (Chrome 11+) */
+        background: -webkit-linear-gradient(var(--grid-line-color) 1px, transparent 0px), -webkit-linear-gradient(0deg, var(--grid-line-color) 1px, transparent 0px);
+        /* Mozilla Firefox */
+        background: -moz-linear-gradient(var(--grid-line-color) 1px, transparent 0px), -moz-linear-gradient(0deg, var(--grid-line-color) 1px, transparent 0px);
+        /* IE10 Consumer Preview */
+        background: -ms-linear-gradient(0deg, var(--grid-line-color) 1.1px, transparent 0px), -ms-linear-gradient(90deg, var(--grid-line-color) 1.1px, transparent 0px);
+        /* Opera */
+        background: -o-linear-gradient(var(--grid-line-color) 1px, transparent 0px), -o-linear-gradient(90deg, var(--grid-line-color) 1px, transparent 0px);
+        /* W3C Markup, IE10 Release Preview */
+        background: linear-gradient(0deg, var(--grid-line-color) 1px, transparent 0px), linear-gradient(90deg, var(--grid-line-color) 1.1px, transparent 0px);
+        
+        background-attachment: local;
       }
 
       #content {
@@ -104,21 +131,24 @@ export class GanttElement extends GanttEventsBase {
 
   render() {
     return html`
+    <div id="gantt-container">
+      <timeline-element id="timeline" scrollContainerId="container"
+          .directlyInsideScrollContainer="${false}"
+          .resolution="${this.resolution}" 
+          .startDateTime="${this.start}" 
+          .endDateTime="${this.end}"
+          .timeZone="${this.zone}"
+          .locale="${this.locale}"
+          .firstDayOfWeek="${this.firstDayOfWeek}"
+          .twelveHourClock="${this.twelveHourClock}">
+      </timeline-element>
       <div id="container">
-        <timeline-element id="timeline"
-            .resolution="${this.resolution}" 
-            .startDateTime="${this.start}" 
-            .endDateTime="${this.end}"
-            .timeZone="${this.zone}"
-            .locale="${this.locale}"
-            .firstDayOfWeek="${this.firstDayOfWeek}"
-            .twelveHourClock="${this.twelveHourClock}">
-        </timeline-element>
         <div id="content">
           <slot @slotchange=${this.handleSlotchange}></slot>
         </div>
-        <div id="mv-el" style="display: none;"></div>
       </div>
+      <div id="mv-el" style="display: none;"></div>
+    </div>
     `;
   }
 
@@ -127,6 +157,7 @@ export class GanttElement extends GanttEventsBase {
   }
 
   firstUpdated(changedProperties: any) {
+    this.initGrid(this._container, this._content);
     super.firstUpdated(changedProperties);
     // TODO enable when typescript supports ResizeObserver
     // this._resizeObserver.observe(this);
@@ -151,6 +182,7 @@ export class GanttElement extends GanttEventsBase {
     await this._timeline.updateComplete;
     this.updateContentWidth();
     this._steps.forEach(step => step.refresh());
+    this.updateContainerStyle();
   }
 
   public updateContentWidth() {
@@ -163,4 +195,110 @@ export class GanttElement extends GanttEventsBase {
     this.getContent().style.height = heightOfSteps + 'px';
   }
 
+  private updateContainerStyle() {
+    if (this.backgroundGridEnabled) {
+      this.showGrid();
+    } else {
+      this.hideGrid();
+      return;
+    }
+
+    // Container element has a background image that is positioned, sized
+    // and repeated to fill the whole container with a nice grid background.
+
+    // Update 'background-size' in container element to match the background
+    // grid's cell width and height to match with the timeline and rows.
+    // Update also 'background-position' in container to match the first
+    // resolution element width in the timeline, IF it's not same as all
+    // other resolution element widths.
+    let resDivElementCount: number = this._timeline.resolutionDiv.childElementCount;
+    if (resDivElementCount == 0) {
+      return;
+    }
+    let secondResolutionBlock: HTMLElement = null;
+    let firstResolutionBlockWidth: number = this._timeline.getFirstResolutionElementWidth();
+    if (firstResolutionBlockWidth == null) {
+      return;
+    }
+    let secondResolutionBlockWidth: number = null;
+    if (resDivElementCount > 2) {
+      secondResolutionBlock = <HTMLElement>this._timeline.resolutionDiv.children[1];
+      secondResolutionBlockWidth = ElementUtil.getWidth(secondResolutionBlock);
+    }
+
+    let contentOverflowingHorizontally: boolean = this.isContentOverflowingHorizontally();
+
+    let adjustBgPosition: boolean = secondResolutionBlockWidth != null
+      && firstResolutionBlockWidth !== secondResolutionBlockWidth;
+    let gridBlockWidthPx: number = 0.0;
+    if (!adjustBgPosition) {
+      gridBlockWidthPx = firstResolutionBlockWidth;
+    } else {
+      gridBlockWidthPx = secondResolutionBlockWidth;
+    }
+
+    this.updateContainerBackgroundSize(contentOverflowingHorizontally, gridBlockWidthPx);
+
+    this.updateContainerBackgroundPosition(firstResolutionBlockWidth, contentOverflowingHorizontally, gridBlockWidthPx,
+      adjustBgPosition);
+  }
+
+  private updateContainerBackgroundSize(contentOverflowingHorizontally: boolean, gridBlockWidthPx: number) {
+    let gridBlockWidth: string = null;
+    if (contentOverflowingHorizontally || this.useAlwaysPxSizeInBackground) {
+      gridBlockWidth = gridBlockWidthPx + "px";
+    } else {
+      let contentWidth: number = ElementUtil.getWidth(this.getContent());
+      gridBlockWidth = (100.0 / contentWidth) * gridBlockWidthPx + "%";
+    }
+
+    let gridBlockHeightPx: number = this.getBgGridCellHeight();
+    this.setBackgroundSize(gridBlockWidth, gridBlockWidthPx, gridBlockHeightPx);
+  }
+
+  private updateContainerBackgroundPosition(firstResolutionBlockWidth: number,
+    contentOverflowingHorizontally: boolean, gridBlockWidthPx: number, adjustBgPosition: boolean) {
+    if (adjustBgPosition) {
+      let realBgPosXPx: number = firstResolutionBlockWidth - 1.0;
+
+      if (this.useAlwaysPxSizeInBackground || contentOverflowingHorizontally) {
+        this.setBackgroundPosition(realBgPosXPx + "px", "0px", realBgPosXPx,
+          0);
+      } else {
+        let timelineWidth: number = this._timeline.calculateTimelineWidth();
+        let relativeBgAreaWidth: number = timelineWidth - gridBlockWidthPx;
+        let bgPosX: number = (100.0 / relativeBgAreaWidth) * realBgPosXPx;
+        this.setBackgroundPosition(bgPosX + "%", "0px", realBgPosXPx, 0);
+      }
+    } else {
+      this.setBackgroundPosition("-1px", "0", -1, 0);
+    }
+  }
+
+  private getBgGridCellHeight(): number {
+    let gridBlockHeightPx: number = 0;
+    let firstStepIndex: number = 0;
+    if (firstStepIndex < this.getSteps().length) {
+      let firstStep: GanttStepElement = this.getSteps()[firstStepIndex];
+      gridBlockHeightPx = this.getElementHeightWithMargin(firstStep);
+      if ((this.getContentHeight() % gridBlockHeightPx) != 0) {
+        // height is not divided evenly for each bar.
+        // Can't use background grid with background-size trick.
+        gridBlockHeightPx = 0;
+      }
+    }
+    return gridBlockHeightPx;
+  }
+
+  /**
+  * Return true, if content is overflowing horizontally. This means also that
+  * horizontal scroll bar is visible.
+  */
+  public isContentOverflowingHorizontally(): boolean {
+    // state of horizontal overflow is handled by timeline widget
+    if (!this._content || !this._container || !this._timeline) {
+      return false;
+    }
+    return this._timeline.isTimelineOverflowingHorizontally();
+  }
 }

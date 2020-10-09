@@ -266,7 +266,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
     this.moveElement.style.left = left + "px";
     this.moveElement.style.width = step.clientWidth + "px";
-    this.moveElement.style.height = this._container.clientHeight + "px";
+    this.moveElement.style.height = this._ganttContainer.clientHeight + "px";
   }
 
   private hideMoveElement() {
@@ -282,7 +282,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     console.log("Position delta y: " + deltay + "px" + " capture point y is " + this.capturePoint[1]);
 
     let newPosition: GanttStepElement = this.findStepElement(step, this.capturePointTopPx,
-      (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - this.getContent().offsetTop,
+      (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - this._container.offsetTop,
       deltay);
     this.internalMoveOrResizeCompleted(step, newPosition, true, event);
   }
@@ -353,7 +353,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
   }
 
-  private getElementHeightWithMargin(div: HTMLElement): number {
+  public getElementHeightWithMargin(div: HTMLElement): number {
     let height: number = Math.round(ElementUtil.getHeight(div));
     let marginHeight: number = 0;
     marginHeight = this.getMarginByComputedStyle(div);
@@ -381,7 +381,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     let stepTop: number = parseInt(step.style.top, 10) + offsetY;
     let movementFromTop: number = this.capturePointTopPx + deltay;
     let deltaTop: number = movementFromTop - stepTop;
-    let maxDeltaUp: number = this.capturePoint[1] - this.getContent().offsetTop - this.capturePointTopPx;
+    let maxDeltaUp: number = this.capturePoint[1] - this._container.offsetTop - this.capturePointTopPx;
     let maxDeltaDown: number = stepHeight - maxDeltaUp;
 
     if (deltaTop <= (-1 * maxDeltaUp)) {
