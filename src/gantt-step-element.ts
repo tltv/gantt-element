@@ -169,7 +169,6 @@ export class GanttStepElement extends GanttSubStepsBase {
                 this.ownerUidUpdated();
                 return;
             }
-            this.updateUid();
         }
         this.updateUid();
     }

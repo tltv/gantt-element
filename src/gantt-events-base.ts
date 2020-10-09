@@ -17,6 +17,10 @@ export interface GanttEventsInterface {
   handleMouseDown(event: MouseEvent): void;
 }
 
+declare global {
+  interface Window { GanttElementEvents: GanttEventsBase; }
+}
+
 export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implements GanttEventsInterface {
 
   private static TAP_TIME_WINDOW = 400; // milliseconds
@@ -93,18 +97,31 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.setEventCapturePoint(event, <GanttStepElement>event.target);
       this.addEventListener('mouseup', this._handleMouseUp);
       this.addEventListener('mousemove', this._handleMouseMove);
+      window.addEventListener('mouseup', this._handleMouseUpOuside);
+      window.GanttElementEvents = this;
     }
   }
 
   public _handleMouseUp(event: MouseEvent) {
+    console.log("INSIDE");
     if(this.capturePoint && this.movePoint && this.capturePoint[0] == this.movePoint[0] && this.capturePoint[1] == this.movePoint[1])  {
       this._handleTap(event);
     } else {
       this.handleMouseOrTouchUp(event);
     }
-    this.clearEventCapturePoint();
-    this.removeEventListener('mouseup', this._handleMouseUp);
-    this.removeEventListener('mousemove', this._handleMouseMove);
+    this.endMouseEvent();
+    event.stopPropagation();
+  }
+
+  private _handleMouseUpOuside(event: MouseEvent) {
+    if(!window.GanttElementEvents) {
+      console.error("Attempted to end Gantt mouse events without window.GanttElementEvents target gantt element");
+      return;
+    }
+    let target = window.GanttElementEvents;
+    target.resetStepPosition(target._eventTargetStep);
+    target.hideMoveElement();
+    target.endMouseEvent();
   }
 
   private _handleMouseMove(event: MouseEvent) {
@@ -156,6 +173,14 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
 
     this.hideMoveElement();
+  }
+
+  private endMouseEvent() {
+    this.clearEventCapturePoint();
+    this.removeEventListener('mouseup', this._handleMouseUp);
+    this.removeEventListener('mousemove', this._handleMouseMove);
+    window.removeEventListener('mouseup', this._handleMouseUpOuside);
+    window.GanttElementEvents = null;
   }
 
   private resetStepPosition(step: GanttStepElement) {
@@ -228,7 +253,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     this.moveElement.style.removeProperty('display');
 
     let styleLeft: string = step.style.left;
-    // user capturePointLeftPx as default
+    // use capturePointLeftPx as default
     let left: number = this.capturePointLeftPx;
     if (styleLeft && styleLeft.length > 2 && styleLeft.endsWith("px")) {
       // if target's 'left' is pixel value like '123px', use that.
@@ -348,25 +373,25 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   private updateStepYPosition(step: GanttStepElement, deltay: number) {
-    let barHeight: number = this.getElementHeightWithMargin(step);
+    let stepHeight: number = this.getElementHeightWithMargin(step);
     let offsetY: number = 0; // offset from content top edge
     if (step.substep) {
       offsetY = parseInt(step.owner.style.top, 10);
     }
-    let barTop: number = parseInt(step.style.top, 10) + offsetY;
+    let stepTop: number = parseInt(step.style.top, 10) + offsetY;
     let movementFromTop: number = this.capturePointTopPx + deltay;
-    let deltaTop: number = movementFromTop - barTop;
+    let deltaTop: number = movementFromTop - stepTop;
     let maxDeltaUp: number = this.capturePoint[1] - this.getContent().offsetTop - this.capturePointTopPx;
-    let maxDeltaDown: number = barHeight - maxDeltaUp;
+    let maxDeltaDown: number = stepHeight - maxDeltaUp;
 
     if (deltaTop <= (-1 * maxDeltaUp)) {
       // move up
-      if ((barTop - barHeight) >= 0) {
-        step.style.top = barTop - barHeight - offsetY + "px";
+      if ((stepTop - stepHeight) >= 0) {
+        step.style.top = stepTop - stepHeight - offsetY + "px";
       }
     } else if (deltaTop >= maxDeltaDown) {
       // move down
-      step.style.top = barTop + barHeight - offsetY + "px";
+      step.style.top = Math.min(this.getContent().clientHeight - stepHeight, stepTop + stepHeight - offsetY) + "px";
     }
   }
 
