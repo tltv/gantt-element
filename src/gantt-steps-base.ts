@@ -1,0 +1,97 @@
+import { LitElement, property } from 'lit-element';
+import { query } from 'lit-element/lib/decorators.js';
+import { GanttStepElement } from './gantt-step-element';
+import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
+
+export interface GanttStepsInterface {
+    _steps: Array<GanttStepElement>;
+    _container: HTMLDivElement;
+    _content: HTMLDivElement;
+    getContentWidth(): number;
+    getContent(): HTMLDivElement;
+    handleSlotchange(e: Event): void;
+    findStepElement(startFromStep: GanttStepElement, startTopY: number, startBottomY: number, newY: number, deltay: number): GanttStepElement;
+}
+
+export class GanttStepsBase extends LitElement implements GanttStepsInterface {
+
+    _steps: Array<GanttStepElement>;
+    @query('#container')
+    _container: HTMLDivElement;
+    @query('#content')
+    _content: HTMLDivElement;
+
+    public getContentWidth() {
+        return ElementUtil.getWidth(this.getContent());
+    }
+
+    public getContent() {
+        return this._content;
+    }
+
+    handleSlotchange(e: Event) {
+        let slot: HTMLSlotElement = <HTMLSlotElement>e.target;
+        this._steps = slot.assignedElements({ flatten: true }).map(element => <GanttStepElement>element);
+        this._steps.forEach((step, index) => step.position = index);
+        console.log(`GanttElement.handleSlotchange ended with ${this._steps.length} step(s)`);
+    }
+
+    /**
+    * Helper method to find Step element by given starting point and y-position
+    * and delta-y. Starting point is there to optimize performance a bit as
+    * there's no need to iterate through every single step element.
+    *
+    * @param startFromStep
+    *            Starting point element
+    * @param newY
+    *            target y-axis position (relative to scroll container)
+    * @param deltay
+    *            delta-y relative to starting point element.
+    * @return Step element at y-axis position. May be same element as given
+    *         startFromBar element.
+    */
+    findStepElement(startFromStep: GanttStepElement, startTopY: number, startBottomY: number, newY: number, deltay: number): GanttStepElement {
+        let substep: boolean = startFromStep.substep;
+        if (substep) {
+            startFromStep = startFromStep.owner;
+        }
+
+        if (this.isBetween(newY, startTopY, startBottomY)) {
+            console.log("findStepElement returns same: Y " + newY + " between " + startTopY + "-" + startBottomY);
+            return startFromStep;
+        }
+        let startIndex: number = this._steps.indexOf(startFromStep);
+        let stepCanditate: GanttStepElement;
+        let i: number = startIndex;
+        if (deltay > 0) {
+            i++;
+            for (; i < this._steps.length; i++) {
+                stepCanditate = this._steps[i];
+                if (this.isBetween(newY, stepCanditate.offsetTop,
+                    (stepCanditate.offsetTop + stepCanditate.offsetHeight))) {
+                    if (!substep && i == (startIndex + 1)) {
+                        // moving directly over the following step will be
+                        // ignored (if not sub-step).
+                        return startFromStep;
+                    }
+                    return stepCanditate;
+                }
+            }
+        } else if (deltay < 0) {
+            i--;
+            for (; i >= 0; i--) {
+                stepCanditate = this._steps[i];
+                if (this.isBetween(newY, stepCanditate.offsetTop,
+                    (stepCanditate.offsetTop + stepCanditate.offsetHeight))) {
+                    return stepCanditate;
+                }
+            }
+        }
+        return startFromStep;
+    }
+
+    private isBetween(v: number, min: number, max: number): boolean {
+        return v >= min && v <= max;
+    }
+
+}
