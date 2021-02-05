@@ -33,7 +33,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     }
   }) 
   public resolution: Resolution = Resolution.Day;
-  /* Inclusive start Date (millisecond accuracy) */
+  /* Inclusive start Date (hour accuracy) */
   @property({ 
     reflect: true,
     converter: {
@@ -41,12 +41,12 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
         return toDate(value);
       },
       toAttribute: (value: Date, type) => { 
-        return format(value, "yyyy-MM-dd'T'HH:mm:ss");
+        return format(value, "yyyy-MM-dd'T'HH");
       }
     } 
   }) 
   public start: Date;
-  /* Inclusive end Date (millisecond accuracy) */
+  /* Inclusive end Date for Day/Week resolution. Exclusive for Hour resolution. (hour accuracy) */
   @property({ 
     reflect: true, 
     converter: {
@@ -54,7 +54,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
         return toDate(value);
       },
       toAttribute: (value: Date, type) => { 
-        return format(value, "yyyy-MM-dd'T'HH:mm:ss");
+        return format(value, "yyyy-MM-dd'T'HH");
       }
     } 
   }) 

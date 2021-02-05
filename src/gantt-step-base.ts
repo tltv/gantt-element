@@ -22,17 +22,17 @@ export class GanttStepBase extends LitElement {
         }
     })
     public start: Date;
-    /* Inclusive end Date (millisecond accuracy) */
+    /* Inclusive end Date (millisecond accuracy). */
     @property({
         reflect: true,
         converter: {
-            fromAttribute: (value: string, type) => {
-                return toDate(value);
+            fromAttribute: (value: string, type) => { 
+              return toDate(value);
             },
-            toAttribute: (value: Date, type) => {
-                return format(value, "yyyy-MM-dd'T'HH:mm:ss");
+            toAttribute: (value: Date, type) => { 
+              return format(value, "yyyy-MM-dd'T'HH:mm:ss");
             }
-        }
+        } 
     })
     public end: Date;
 
