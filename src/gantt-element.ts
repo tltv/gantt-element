@@ -35,30 +35,14 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   public resolution: Resolution = Resolution.Day;
   /* Inclusive start Date (hour accuracy) */
   @property({ 
-    reflect: true,
-    converter: {
-      fromAttribute: (value: string, type) => { 
-        return toDate(value);
-      },
-      toAttribute: (value: Date, type) => { 
-        return format(value, "yyyy-MM-dd'T'HH");
-      }
-    } 
+    reflect: true
   }) 
-  public start: Date;
+  public start: string;
   /* Inclusive end Date for Day/Week resolution. Exclusive for Hour resolution. (hour accuracy) */
   @property({ 
-    reflect: true, 
-    converter: {
-      fromAttribute: (value: string, type) => { 
-        return toDate(value);
-      },
-      toAttribute: (value: Date, type) => { 
-        return format(value, "yyyy-MM-dd'T'HH");
-      }
-    } 
+    reflect: true
   }) 
-  public end: Date;
+  public end: string;
   @property({ reflect: true}) 
   public zone: string = "Europe/London";
   @property({ reflect: true}) 
