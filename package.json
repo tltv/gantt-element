@@ -5,10 +5,11 @@
   "main": "gantt-element.js",
   "module": "gantt-element.js",
   "dependencies": {
+    "@types/resize-observer-browser": "^0.1.5",
     "date-fns": "^2.9.0",
     "date-fns-tz": "^1.0.9",
     "lit-element": "^2.4.0",
-    "tltv-timeline-element": "^1.0.5"
+    "tltv-timeline-element": "^1.0.6"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",

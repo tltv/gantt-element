@@ -50,12 +50,11 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   @property({ reflect: true}) firstDayOfWeek: number = 1; // sunday;
   @property({ reflect: true }) twelveHourClock: boolean = false;
 
-  // TODO enable when typescript supports ResizeObserver
-  // _resizeObserver = new ResizeObserver(entries => {
-  //   this._timeline.updateWidths();
-  //   this.updateContainerStyle();
-  //   this.updateContentWidth();
-  // });
+  _resizeObserver = new ResizeObserver(entries => {
+    this._timeline.updateWidths();
+    this.updateContainerStyle();
+    this.updateContentWidth();
+  });
 
   static get styles() {
     return css`
@@ -143,15 +142,11 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   firstUpdated(changedProperties: any) {
     this.initGrid(this._container, this._content);
     super.firstUpdated(changedProperties);
-    // TODO enable when typescript supports ResizeObserver
-    // this._resizeObserver.observe(this);
+    this._resizeObserver.observe(this);
   }
 
   updated(changedProperties: any) {
     if (changedProperties.has('resolution') || changedProperties.has('start') || changedProperties.has('end')) {
-      // TODO when reolution is hour, end time has to max minutes+seconds (in timeline or here)
-      // TODO when resolution is day/week, end time should probably minimize minutes+seconds (in timeline or here)
-      // TODO alternatively make end date exclusive not inclusive.
       this.timelineUpdated();
     }
     super.updated(changedProperties);
