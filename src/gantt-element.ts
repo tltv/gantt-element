@@ -38,7 +38,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     reflect: true
   }) 
   public start: string;
-  /* Inclusive end Date for Day/Week resolution. Exclusive for Hour resolution. (hour accuracy) */
+  /* Inclusive end Date (hour accuracy) */
   @property({ 
     reflect: true
   }) 
