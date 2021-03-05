@@ -34,6 +34,17 @@ export class GanttStepsBase extends LitElement implements GanttStepsInterface {
         return this._content;
     }
 
+    getOffsetTopContentElement(element: HTMLElement): number {
+        if (element.offsetParent === this._content) {
+            return element.offsetTop;
+        } else if (element.offsetParent === this) {
+            // FireFox reports root element as offsetParent for slotted steps
+            return element.offsetTop - this._container.offsetTop;
+        } else {
+            throw "element.offsetParent should be either content or gantt element";
+        }
+    }
+
     handleSlotchange(e: Event) {
         let slot: HTMLSlotElement = <HTMLSlotElement>e.target;
         this._steps = slot.assignedElements({ flatten: true }).map(element => <GanttStepElement>element);
@@ -72,8 +83,8 @@ export class GanttStepsBase extends LitElement implements GanttStepsInterface {
             i++;
             for (; i < this._steps.length; i++) {
                 stepCanditate = this._steps[i];
-                if (this.isBetween(newY, stepCanditate.offsetTop,
-                    (stepCanditate.offsetTop + stepCanditate.offsetHeight))) {
+                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate),
+                    (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
                     if (!substep && i == (startIndex + 1)) {
                         // moving directly over the following step will be
                         // ignored (if not sub-step).
@@ -86,8 +97,8 @@ export class GanttStepsBase extends LitElement implements GanttStepsInterface {
             i--;
             for (; i >= 0; i--) {
                 stepCanditate = this._steps[i];
-                if (this.isBetween(newY, stepCanditate.offsetTop,
-                    (stepCanditate.offsetTop + stepCanditate.offsetHeight))) {
+                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate),
+                    (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
                     return stepCanditate;
                 }
             }

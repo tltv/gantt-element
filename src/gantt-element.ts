@@ -60,6 +60,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     return css`
       :host {
         display: block;
+        position: relative;
 
         --grid-line-color: #eee;
       }

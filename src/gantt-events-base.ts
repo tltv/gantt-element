@@ -198,7 +198,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     this._eventTargetStep = step;
     this.capturePointLeftPercentage = step.style.left;
     this.capturePointWidthPercentage = step.style.width;
-    this.capturePointTopPx = step.offsetTop;
+    this.capturePointTopPx = this.getOffsetTopContentElement(step);
     this.capturePointLeftPx = step.offsetLeft;
     this.capturePointWidthPx = step.clientWidth;
     this.capturePoint = GanttUtil.getPointForEvent(event, this._container);
