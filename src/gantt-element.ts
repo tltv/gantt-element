@@ -51,9 +51,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   @property({ reflect: true }) twelveHourClock: boolean = false;
 
   _resizeObserver = new ResizeObserver(entries => {
-    this._timeline.updateWidths();
-    this.updateContainerStyle();
-    this.updateContentWidth();
+    this.updateSize();
   });
 
   static get styles() {
@@ -63,12 +61,16 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
         position: relative;
 
         --grid-line-color: #eee;
+        --gantt-element-width: 100%;
+        --gantt-element-height: auto;
+
+        width: var(--gantt-element-width);
+        height: var(--gantt-element-height);
       }
 
       #gantt-container {
         position: relative;
         width: 100%;
-        height: 100%;
         user-select: none;
         overflow: hidden;
       }
@@ -78,6 +80,8 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
         width: 100%;
         height: 100%;
         user-select: none;
+        overflow-x: hidden;
+        overflow-y: auto;
         
         background: var(--grid-line-color);
         /* Webkit (Safari/Chrome 10) */
@@ -158,6 +162,13 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     this.updateContentHeight();
   }
 
+  public updateSize() {
+    this._timeline.updateWidths();
+    this.updateGanttContainerStyle();
+    this.updateContainerStyle();
+    this.updateContentWidth();
+  }
+
   async timelineUpdated () {
     await this._timeline.updateComplete;
     this.updateContentWidth();
@@ -175,7 +186,29 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     this.getContent().style.height = heightOfSteps + 'px';
   }
 
+  private convertGanttHeightToContainerHeight() {
+    let ganttHeight = this.ownerDocument.defaultView.getComputedStyle(this).getPropertyValue("--gantt-element-height");
+    if(ganttHeight && ganttHeight.trim().endsWith("%")) {
+      return "100%"; // containers should fill whole available height when gantt height is in percentages
+    }
+    return ganttHeight;
+  }
+
+  private updateGanttContainerStyle() {
+    // gantt container height should always match with host element's height
+    this._ganttContainer.style.height = this.convertGanttHeightToContainerHeight();
+  }
+
   private updateContainerStyle() {
+    // update container height based on timeline height
+    let ganttHeight = this.convertGanttHeightToContainerHeight();
+    let timelineHeight = ElementUtil.getHeight(this._timeline);
+    if(ganttHeight === "auto") {
+      this._container.style.height = "auto";
+    } else {
+      this._container.style.height = "calc(" + ganttHeight + " - " + timelineHeight + "px)";
+    }
+
     if (this.backgroundGridEnabled) {
       this.showGrid();
     } else {
