@@ -1,6 +1,7 @@
 import { LitElement, property } from 'lit-element';
 import { query } from 'lit-element/lib/decorators.js';
 import { GanttStepElement } from './gantt-step-element';
+import { GanttSubStepsBase } from './gantt-substeps-base';
 import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
 
 export interface GanttStepsInterface {
@@ -35,7 +36,7 @@ export class GanttStepsBase extends LitElement implements GanttStepsInterface {
     }
 
     getOffsetTopContentElement(element: HTMLElement): number {
-        if (element.offsetParent === this._content) {
+        if ((element instanceof GanttSubStepsBase && element.substep) || element.offsetParent === this._content) {
             return element.offsetTop;
         } else if (element.offsetParent === this) {
             // FireFox reports root element as offsetParent for slotted steps
