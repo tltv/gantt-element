@@ -54,6 +54,8 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     this.updateSize();
   });
 
+  scrollbarWidth = 18; // pixels //TODO calculate scrollbar size
+
   static get styles() {
     return css`
       :host {
@@ -177,7 +179,11 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   }
 
   public updateContentWidth() {
-    this.getContent().style.width = ElementUtil.getWidth(this._timeline) + "px";
+    if((ElementUtil.getHeight(this.getContent()) > ElementUtil.getHeight(this._container))) {
+      this.getContent().style.width = ElementUtil.getWidth(this._timeline) - this.scrollbarWidth + "px";
+    } else {
+      this.getContent().style.width = ElementUtil.getWidth(this._timeline) + "px";
+    }
   }
 
   public updateContentHeight() {
