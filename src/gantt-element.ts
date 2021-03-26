@@ -50,7 +50,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   @property({ reflect: true}) firstDayOfWeek: number = 1; // sunday;
   @property({ reflect: true }) twelveHourClock: boolean = false;
 
-  _resizeObserver = new ResizeObserver(entries => {
+  _resizeObserver = new ResizeObserver(() => {
     this.updateSize();
   });
 
