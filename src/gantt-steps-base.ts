@@ -17,7 +17,7 @@ export interface GanttStepsInterface {
 
 export class GanttStepsBase extends LitElement implements GanttStepsInterface {
 
-    _steps: Array<GanttStepElement>;
+    _steps: Array<GanttStepElement> = [];
     
     @query('#gantt-container') _ganttContainer: HTMLDivElement;
     @query('#container') _container: HTMLDivElement;
