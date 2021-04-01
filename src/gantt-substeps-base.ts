@@ -14,6 +14,10 @@ export class GanttSubStepsBase extends GanttStepBase {
 
     constructor() {
         super();
+    }
+
+    firstUpdated(changedProperties: any) {
+        super.firstUpdated(changedProperties);
         if(this.substep = this.parentElement instanceof GanttStepElement) {
             this.classList.add("substep");
             this.owner = this.parentElement;

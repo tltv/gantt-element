@@ -85,6 +85,10 @@ export class GanttStepElement extends GanttSubStepsBase {
 
     constructor() {
         super();
+    }
+
+    firstUpdated(changedProperties: any) {
+        super.firstUpdated(changedProperties);
         this.classList.add("step");
         this.style.setProperty('--gantt-step-height', this.stepHeight);
         this.addEventListener('touchstart', this._handleTouchStart);
