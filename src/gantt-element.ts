@@ -194,7 +194,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
 
   private convertGanttHeightToContainerHeight() {
     let ganttHeight = this.ownerDocument.defaultView.getComputedStyle(this).getPropertyValue("--gantt-element-height");
-    if(ganttHeight && ganttHeight.trim().endsWith("%")) {
+    if(ganttHeight && (ganttHeight.trim().endsWith("%") || ganttHeight.trim().endsWith("vm"))) {
       return "100%"; // containers should fill whole available height when gantt height is in percentages
     }
     return ganttHeight;
