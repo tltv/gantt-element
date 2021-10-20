@@ -1,6 +1,5 @@
 import { LitElement, html, css, property, customElement } from 'lit-element';
 import { GanttElement } from './gantt-element';
-import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
 import { GanttSubStepsBase } from './gantt-substeps-base';
 
 @customElement('gantt-step-element')

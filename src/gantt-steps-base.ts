@@ -1,8 +1,9 @@
 import { LitElement, property } from 'lit-element';
-import { query } from 'lit-element/lib/decorators.js';
+import { query } from 'lit-element/decorators.js';
 import { GanttStepElement } from './gantt-step-element';
 import { GanttSubStepsBase } from './gantt-substeps-base';
-import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
+import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
+import 'tltv-timeline-element/dist/src/timeline-element.js';
 
 export interface GanttStepsInterface {
     _steps: Array<GanttStepElement>;

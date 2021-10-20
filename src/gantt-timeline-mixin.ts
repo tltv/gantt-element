@@ -1,6 +1,6 @@
 import { LitElement, property } from 'lit-element';
-import { query } from 'lit-element/lib/decorators.js';
-import { TimelineElement } from 'tltv-timeline-element/src/timeline-element';
+import { query } from 'lit-element/decorators.js';
+import { TimelineElement } from 'tltv-timeline-element/dist/src/timeline-element.js';
 
 type Constructor<T = object> = {
     new(...args: any[]): T;

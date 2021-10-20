@@ -1,8 +1,8 @@
 import { LitElement, property } from 'lit-element';
 import { GanttStepElement } from './gantt-step-element';
 import { GanttStepBase } from './gantt-step-base';
-import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
-import { TimelineElement } from 'tltv-timeline-element/src/timeline-element';
+import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
+import { TimelineElement } from 'tltv-timeline-element/dist/src/timeline-element.js';
 
 
 export class GanttSubStepsBase extends GanttStepBase {
@@ -18,21 +18,28 @@ export class GanttSubStepsBase extends GanttStepBase {
 
     firstUpdated(changedProperties: any) {
         super.firstUpdated(changedProperties);
+        this._setupForSubStep();
+    }
+
+    handleSlotchange(e: Event) {
+        // handleSlotchange is called before substep's firstUpdated
+        let slot: HTMLSlotElement = <HTMLSlotElement>e.target;
+        this._substeps = slot.assignedElements({ flatten: true }).map(element => <GanttStepElement>element);
+        this._substeps.forEach((substep, index) => {
+            substep._setupForSubStep();
+            substep.position = index;
+        });
+        console.log(`GanttSubStepsBase.handleSlotchange ended with ${this._substeps.length} step(s)`);
+    }
+
+    _setupForSubStep() {
         if(this.substep = this.parentElement instanceof GanttStepElement) {
             this.classList.add("substep");
             this.owner = this.parentElement;
             this.owner.classList.add("has-sub-steps");
-        }
-    }
-
-    handleSlotchange(e: Event) {
-        let slot: HTMLSlotElement = <HTMLSlotElement>e.target;
-        this._substeps = slot.assignedElements({ flatten: true }).map(element => <GanttStepElement>element);
-        if(this._substeps.length == 0) {
+        } else {
             this.classList.remove("has-sub-steps");
         }
-        this._substeps.forEach((substep, index) => substep.position = index);
-        console.log(`GanttSubStepsBase.handleSlotchange ended with ${this._substeps.length} step(s)`);
     }
 
     async calculateSubStepLeft(timeline: TimelineElement) {

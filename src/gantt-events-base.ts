@@ -1,11 +1,10 @@
 import { LitElement, property } from 'lit-element';
-import { query } from 'lit-element/lib/decorators.js';
+import { query } from 'lit-element/decorators.js';
 import { GanttTimelineMixin } from './gantt-timeline-mixin';
 import { GanttStepElement } from './gantt-step-element';
 import * as GanttUtil from './util/ganttUtil';
-import * as ElementUtil from 'tltv-timeline-element/src/util/elementUtil';
+import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepsBase } from './gantt-steps-base';
-import { GanttElement } from './gantt-element';
 
 export interface GanttEventsInterface {
   movableSteps: boolean;
@@ -381,17 +380,15 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       offsetY = parseInt(step.owner.style.top, 10);
     }
     let stepTop: number = parseInt(step.style.top, 10) + offsetY;
-    let movementFromTop: number = this.capturePointTopPx + deltay;
-    let deltaTop: number = movementFromTop - stepTop;
-    let maxDeltaUp: number = this.capturePoint[1] - this._container.offsetTop - this.capturePointTopPx;
-    let maxDeltaDown: number = stepHeight - maxDeltaUp;
+    let maxStepEdgeDeltaUp: number = stepTop - (this.capturePoint[1] - (this._container.offsetTop + this.offsetTop));
+    let maxStepEdgeDeltaDown: number = stepHeight + maxStepEdgeDeltaUp;
 
-    if (deltaTop <= (-1 * maxDeltaUp)) {
+    if (deltay <= maxStepEdgeDeltaUp) {
       // move up
       if ((stepTop - stepHeight) >= 0) {
         step.style.top = stepTop - stepHeight - offsetY + "px";
       }
-    } else if (deltaTop >= maxDeltaDown) {
+    } else if (deltay >= maxStepEdgeDeltaDown) {
       // move down
       step.style.top = Math.min(this.getContent().clientHeight - stepHeight, stepTop + stepHeight - offsetY) + "px";
     }

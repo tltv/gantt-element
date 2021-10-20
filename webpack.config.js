@@ -6,9 +6,6 @@ module.exports = {
   mode: 'development',
   entry: './src/gantt-element.ts',
   devtool: 'inline-source-map',
-  devServer: {
-    contentBase: './dist',
-  },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
@@ -22,9 +19,6 @@ module.exports = {
         test: /\.tsx?$/,
         use: { 
           loader: 'ts-loader',
-          options: { 
-            allowTsInNodeModules: true 
-          }
         },
       },
     ],
@@ -33,7 +27,7 @@ module.exports = {
     extensions: [ '.tsx', '.ts', '.js' ],
   },
   output: {
-    filename: 'main.js',
+    filename: 'gantt-element.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/',
   },
