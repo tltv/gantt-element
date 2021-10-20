@@ -1,5 +1,4 @@
 import { Resolution } from 'tltv-timeline-element/dist/src/model/Resolution.js';
-import './gantt-step-element.ts';
 import { GanttEventsBase } from './gantt-events-base';
 declare const GanttElement_base: typeof GanttEventsBase & {
     new (...args: any[]): import("./css-background-grid-mixin").BackgroundGridInterface;

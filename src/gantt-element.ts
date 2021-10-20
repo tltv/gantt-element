@@ -2,7 +2,6 @@ import { LitElement, html, css, property, customElement } from 'lit-element';
 import { Resolution } from 'tltv-timeline-element/dist/src/model/Resolution.js';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepElement } from './gantt-step-element';
-import './gantt-step-element.ts';
 import { GanttEventsBase } from './gantt-events-base';
 import { BackgroundGridMixin } from './css-background-grid-mixin';
 

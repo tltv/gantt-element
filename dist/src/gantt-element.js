@@ -7,7 +7,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css, property, customElement } from 'lit-element';
 import { Resolution } from 'tltv-timeline-element/dist/src/model/Resolution.js';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
-import './gantt-step-element.ts';
 import { GanttEventsBase } from './gantt-events-base';
 import { BackgroundGridMixin } from './css-background-grid-mixin';
 let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
