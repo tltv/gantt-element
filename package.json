@@ -9,7 +9,7 @@
     "date-fns": "^2.25.0",
     "date-fns-tz": "^1.1.6",
     "lit-element": "^3.0.1",
-    "tltv-timeline-element": "^1.0.11"
+    "tltv-timeline-element": "^1.0.12"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
