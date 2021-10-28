@@ -85,7 +85,7 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         pointer-events: none;
 			}
 
-      :host([resizablesteps=true]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):before {
+      :host([resizablesteps]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):before {
         content: "";
         position: absolute;
         top: 0;
@@ -94,7 +94,7 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         height: 100%;
         cursor: e-resize;
       }
-      :host([resizablesteps=true]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):after {
+      :host([resizablesteps]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):after {
           content: "";
           position: absolute;
           right: 0;
