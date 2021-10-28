@@ -72,11 +72,6 @@ export class GanttStepsBase extends LitElement {
             for (; i < this._steps.length; i++) {
                 stepCanditate = this._steps[i];
                 if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate), (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
-                    if (!substep && i == (startIndex + 1)) {
-                        // moving directly over the following step will be
-                        // ignored (if not sub-step).
-                        return startFromStep;
-                    }
                     return stepCanditate;
                 }
             }

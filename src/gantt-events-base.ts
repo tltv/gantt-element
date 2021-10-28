@@ -283,7 +283,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     console.log("Position delta y: " + deltay + "px" + " capture point y is " + this.capturePoint[1]);
 
     let newPosition: GanttStepElement = this.findStepElement(step, this.capturePointTopPx,
-      (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - this._container.offsetTop,
+      (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop),
       deltay);
     this.internalMoveOrResizeCompleted(step, newPosition, true, event);
   }
@@ -346,9 +346,19 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   private moveStepPosition(step: GanttStepElement, newStepUid: string) {
     // avoid editing this._steps directly here (let LitElement do it automatically when DOM structure changes)
     let steps = [...this._steps];
-    steps.splice(steps.indexOf(step), 1);
-    let insertBeforeStep = steps.find(step => step.uid === newStepUid);
-    if (insertBeforeStep) {
+    let movedOverStep = steps.find(step => step.uid === newStepUid);
+    let movingOverSiblingBelow = steps.indexOf(step) + 1 === steps.indexOf(movedOverStep);
+    if (movedOverStep) {
+      let insertBeforeStep;
+      if(steps.indexOf(movedOverStep) + 1 >= steps.length) {
+        // move after the last step
+        insertBeforeStep = null;
+      } else if(movingOverSiblingBelow) {
+        insertBeforeStep = steps[steps.indexOf(movedOverStep) + 1];
+      } else {
+        insertBeforeStep = movedOverStep;
+      }
+      steps.splice(steps.indexOf(step), 1);
       this.removeChild(step);
       this.insertBefore(step, insertBeforeStep);
     }
