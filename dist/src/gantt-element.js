@@ -84,6 +84,25 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         border-right: 1px dashed #999;
         pointer-events: none;
 			}
+
+      :host([resizablesteps=true]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 100%;
+        cursor: e-resize;
+      }
+      :host([resizablesteps=true]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):after {
+          content: "";
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 10px;
+          height: 100%;
+          cursor: e-resize;
+      }
     `;
     }
     render() {
@@ -302,13 +321,13 @@ __decorate([
     property({ reflect: true })
 ], GanttElement.prototype, "firstDayOfWeek", void 0);
 __decorate([
-    property({ reflect: true })
+    property({ reflect: true, type: Boolean })
 ], GanttElement.prototype, "twelveHourClock", void 0);
 __decorate([
-    property()
+    property({ type: Boolean })
 ], GanttElement.prototype, "monthRowVisible", void 0);
 __decorate([
-    property()
+    property({ type: Boolean })
 ], GanttElement.prototype, "yearRowVisible", void 0);
 __decorate([
     property()

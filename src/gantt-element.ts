@@ -36,10 +36,10 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   @property({ reflect: true}) 
   public locale: string = "en-US";
   @property({ reflect: true}) firstDayOfWeek: number = 1; // sunday;
-  @property({ reflect: true }) twelveHourClock: boolean = false;
+  @property({ reflect: true, type: Boolean  }) twelveHourClock: boolean = false;
 
-  @property() monthRowVisible: boolean = true;
-  @property() yearRowVisible: boolean = true;
+  @property({ type: Boolean }) monthRowVisible: boolean = true;
+  @property({ type: Boolean }) yearRowVisible: boolean = true;
   @property() monthNames: string[];
   @property() weekdayNames: string[];
 
@@ -110,6 +110,25 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
         border-right: 1px dashed #999;
         pointer-events: none;
 			}
+
+      :host([resizablesteps=true]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 10px;
+        height: 100%;
+        cursor: e-resize;
+      }
+      :host([resizablesteps=true]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):after {
+          content: "";
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: 10px;
+          height: 100%;
+          cursor: e-resize;
+      }
     `;
   }
 

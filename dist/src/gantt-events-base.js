@@ -119,8 +119,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             this.updateMoveElementFor(this._eventTargetStep);
         }
         else if (this._eventTargetStep.moving) {
-            this.moveStepHorizontally(this._eventTargetStep, deltax);
-            this.updateMoveElementFor(this._eventTargetStep);
+            if (this.movableSteps) {
+                this.moveStepHorizontally(this._eventTargetStep, deltax);
+                this.updateMoveElementFor(this._eventTargetStep);
+            }
             if (this.movableStepsBetweenRows) {
                 this.updateStepYPosition(this._eventTargetStep, deltay);
             }
@@ -173,7 +175,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             this.resizingFromLeft = this.isResizingLeft(step);
         }
         else {
-            step.moving = this.resizableSteps && step.movable;
+            step.moving = (this.movableSteps || this.movableStepsBetweenRows) && step.movable;
         }
     }
     clearEventCapturePoint() {
@@ -247,21 +249,26 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         if (newPosition && step !== newPosition) {
             newStepUid = newPosition.uid;
         }
-        let ownerStartDate;
-        let ownerEndDate;
-        let left = parseInt(step.style.left, 10);
-        if (step.substep) {
-            let ownerLeft = step.owner.offsetLeft;
-            left += ownerLeft;
-            ownerStartDate = this._timeline.getDateForLeftPosition(ownerLeft);
-            ownerLeft += ElementUtil.getWidth(step.owner);
-            ownerEndDate = this._timeline.getDateForLeftPosition(ownerLeft);
+        let startDate = step.start;
+        let endDate = step.end;
+        if ((move && this.movableSteps) || (!move && this.resizableSteps)) {
+            // calculate new start/end dates for moved/resized step
+            let ownerStartDate;
+            let ownerEndDate;
+            let left = parseInt(step.style.left, 10);
+            if (step.substep) {
+                let ownerLeft = step.owner.offsetLeft;
+                left += ownerLeft;
+                ownerStartDate = this._timeline.getDateForLeftPosition(ownerLeft);
+                ownerLeft += ElementUtil.getWidth(step.owner);
+                ownerEndDate = this._timeline.getDateForLeftPosition(ownerLeft);
+            }
+            startDate = this._timeline.getDateForLeftPosition(left);
+            left += ElementUtil.getWidth(step);
+            endDate = this._timeline.getDateForLeftPosition(left);
+            step.start = startDate;
+            step.end = endDate;
         }
-        let startDate = this._timeline.getDateForLeftPosition(left);
-        left += ElementUtil.getWidth(step);
-        let endDate = this._timeline.getDateForLeftPosition(left);
-        step.start = startDate;
-        step.end = endDate;
         if (move) {
             if (this.movableStepsBetweenRows) {
                 if (step.substep) {
@@ -375,16 +382,16 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
 }
 GanttEventsBase.TAP_TIME_WINDOW = 400; // milliseconds
 __decorate([
-    property()
+    property({ reflect: true, type: Boolean })
 ], GanttEventsBase.prototype, "movableSteps", void 0);
 __decorate([
-    property()
+    property({ reflect: true, type: Boolean })
 ], GanttEventsBase.prototype, "resizableSteps", void 0);
 __decorate([
-    property()
+    property({ reflect: true, type: Boolean })
 ], GanttEventsBase.prototype, "movableStepsBetweenRows", void 0);
 __decorate([
-    property({ reflect: true })
+    property({ reflect: true, type: Boolean })
 ], GanttEventsBase.prototype, "touching", void 0);
 __decorate([
     query('#mv-el')

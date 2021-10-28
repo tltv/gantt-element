@@ -37,25 +37,6 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
             cursor: e-resize;
         }
 
-        :host([resizable=true]:not(.has-sub-steps)):before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 10px;
-            height: 100%;
-            cursor: e-resize;
-        }
-        :host([resizable=true]:not(.has-sub-steps)):after {
-            content: "";
-            position: absolute;
-            right: 0;
-            top: 0;
-            width: 10px;
-            height: 100%;
-            cursor: e-resize;
-        }
-        
         :host(.has-sub-steps:hover) > .step-label {
             width: 100%;
             background-color: rgba(246, 255, 99, 0.3);
