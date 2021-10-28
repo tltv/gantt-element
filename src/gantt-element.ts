@@ -38,6 +38,12 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   @property({ reflect: true}) firstDayOfWeek: number = 1; // sunday;
   @property({ reflect: true }) twelveHourClock: boolean = false;
 
+  @property() monthRowVisible: boolean = true;
+  @property() yearRowVisible: boolean = true;
+  @property() monthNames: string[];
+  @property() weekdayNames: string[];
+
+
   _resizeObserver = new ResizeObserver(() => {
     this.updateSize();
   });
@@ -118,7 +124,11 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
           .timeZone="${this.zone}"
           .locale="${this.locale}"
           .firstDayOfWeek="${this.firstDayOfWeek}"
-          .twelveHourClock="${this.twelveHourClock}">
+          .twelveHourClock="${this.twelveHourClock}"
+          .monthRowVisible="${this.monthRowVisible}"
+          .yearRowVisible="${this.yearRowVisible}"
+          .monthNames="${this.monthNames}"
+          .weekdayNames="${this.weekdayNames}">
       </timeline-element>
       <div id="container">
         <div id="content">

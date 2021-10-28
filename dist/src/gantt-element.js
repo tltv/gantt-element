@@ -17,6 +17,8 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         this.locale = "en-US";
         this.firstDayOfWeek = 1; // sunday;
         this.twelveHourClock = false;
+        this.monthRowVisible = true;
+        this.yearRowVisible = true;
         this._resizeObserver = new ResizeObserver(() => {
             this.updateSize();
         });
@@ -95,7 +97,11 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
           .timeZone="${this.zone}"
           .locale="${this.locale}"
           .firstDayOfWeek="${this.firstDayOfWeek}"
-          .twelveHourClock="${this.twelveHourClock}">
+          .twelveHourClock="${this.twelveHourClock}"
+          .monthRowVisible="${this.monthRowVisible}"
+          .yearRowVisible="${this.yearRowVisible}"
+          .monthNames="${this.monthNames}"
+          .weekdayNames="${this.weekdayNames}">
       </timeline-element>
       <div id="container">
         <div id="content">
@@ -298,6 +304,18 @@ __decorate([
 __decorate([
     property({ reflect: true })
 ], GanttElement.prototype, "twelveHourClock", void 0);
+__decorate([
+    property()
+], GanttElement.prototype, "monthRowVisible", void 0);
+__decorate([
+    property()
+], GanttElement.prototype, "yearRowVisible", void 0);
+__decorate([
+    property()
+], GanttElement.prototype, "monthNames", void 0);
+__decorate([
+    property()
+], GanttElement.prototype, "weekdayNames", void 0);
 GanttElement = __decorate([
     customElement('gantt-element')
 ], GanttElement);

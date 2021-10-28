@@ -12,6 +12,10 @@ export declare class GanttElement extends GanttElement_base {
     locale: string;
     firstDayOfWeek: number;
     twelveHourClock: boolean;
+    monthRowVisible: boolean;
+    yearRowVisible: boolean;
+    monthNames: string[];
+    weekdayNames: string[];
     _resizeObserver: ResizeObserver;
     scrollbarWidth: number;
     static get styles(): import("lit-element").CSSResult;
