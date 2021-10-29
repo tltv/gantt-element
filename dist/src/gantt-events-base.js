@@ -37,13 +37,14 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             }, GanttEventsBase.TAP_TIME_WINDOW);
             event.preventDefault();
         }
-        else {
+        else if (event.target === this) {
             this.setEventCapturePoint(event, null);
             this.addEventListener('touchend', this._handleTouchEnd);
             this.touchStartTimeoutId = setTimeout(() => {
                 this.insideTapTimeWindow = false;
             }, GanttEventsBase.TAP_TIME_WINDOW);
-            event.preventDefault();
+            this.addEventListener('touchmove', this._handleTouchMove);
+            this.addEventListener('touchcancel', this._handleTouchCancel);
         }
     }
     _handleTouchEnd(event) {
@@ -80,13 +81,17 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             window.addEventListener('mouseup', this._handleMouseUpOutside);
             window.GanttElementEvents = this;
         }
-        else {
+        else if (event.target === this) {
             this.setEventCapturePoint(event, null);
             this.addEventListener('mouseup', this._handleMouseUp);
             window.addEventListener('mouseup', this._handleMouseUpOutside);
+            window.GanttElementEvents = this;
         }
     }
     _handleMouseUp(event) {
+        if (!this.movePoint) {
+            this.movePoint = GanttUtil.getPointForEvent(event, this._container);
+        }
         if (this.capturePoint && this.movePoint && this.capturePoint[0] == this.movePoint[0] && this.capturePoint[1] == this.movePoint[1]) {
             this._handleTap(event);
         }
@@ -131,10 +136,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         }
     }
     handleMoveOrResize(event) {
+        this.movePoint = GanttUtil.getPointForEvent(event, this._container);
         if (!this._eventTargetStep) {
             return;
         }
-        this.movePoint = GanttUtil.getPointForEvent(event, this._container);
         // calculate delta x and y by original position and the current one.
         let deltax = GanttUtil.getPageX(event, this._container) - this.capturePoint[0];
         let deltay = GanttUtil.getPageY(event, this._container) - this.capturePoint[1];
@@ -183,6 +188,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         window.GanttElementEvents = null;
     }
     resetStepPosition(step) {
+        if (!step) {
+            return;
+        }
         // step.style.backgroundColor = this.capturePointBgColor;
         step.style.setProperty("left", this.capturePointLeftPercentage);
         step.style.setProperty("width", this.capturePointWidthPercentage);
@@ -194,7 +202,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     setEventCapturePoint(event, step) {
         this._eventTargetStep = step;
         this.capturePoint = GanttUtil.getPointForEvent(event, this._container);
-        this.movePoint = [this.capturePoint[0], this.capturePoint[1]];
+        this.movePoint = null;
         if (!step) {
             return;
         }
@@ -203,6 +211,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         this.capturePointTopPx = this.getOffsetTopContentElement(step);
         this.capturePointLeftPx = step.offsetLeft;
         this.capturePointWidthPx = step.clientWidth;
+        this.movePoint = [this.capturePoint[0], this.capturePoint[1]];
         if (this.detectResizing(step)) {
             step.resizing = true;
             this.resizingFromLeft = this.isResizingLeft(step);
