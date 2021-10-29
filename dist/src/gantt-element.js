@@ -135,6 +135,8 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         this.initGrid(this._container, this._content);
         super.firstUpdated(changedProperties);
         this._resizeObserver.observe(this);
+        this.addEventListener('touchstart', this._handleGanttTouchStart);
+        this.addEventListener('mousedown', this._handleGanttMouseDown);
     }
     updated(changedProperties) {
         if (changedProperties.has('resolution') || changedProperties.has('start') || changedProperties.has('end')) {
@@ -286,6 +288,12 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
             return false;
         }
         return this._timeline.isTimelineOverflowingHorizontally();
+    }
+    _handleGanttTouchStart(event) {
+        this.handleTouchStart(event);
+    }
+    _handleGanttMouseDown(event) {
+        this.handleMouseDown(event);
     }
 };
 __decorate([

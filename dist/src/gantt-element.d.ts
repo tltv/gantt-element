@@ -39,5 +39,7 @@ export declare class GanttElement extends GanttElement_base {
     * horizontal scroll bar is visible.
     */
     isContentOverflowingHorizontally(): boolean;
+    private _handleGanttTouchStart;
+    private _handleGanttMouseDown;
 }
 export {};

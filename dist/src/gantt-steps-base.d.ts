@@ -21,6 +21,7 @@ export declare class GanttStepsBase extends LitElement implements GanttStepsInte
     getContent(): HTMLDivElement;
     getOffsetTopContentElement(element: HTMLElement): number;
     handleSlotchange(e: Event): void;
+    findStepIndexAt(topY: number): number;
     /**
     * Helper method to find Step element by given starting point and y-position
     * and delta-y. Starting point is there to optimize performance a bit as

@@ -41,6 +41,17 @@ export class GanttStepsBase extends LitElement {
         this._steps.forEach((step, index) => step.position = index);
         console.log(`GanttElement.handleSlotchange ended with ${this._steps.length} step(s)`);
     }
+    findStepIndexAt(topY) {
+        let step;
+        for (let index = 0; index < this._steps.length; index++) {
+            step = this._steps[index];
+            if (this.isBetween(topY, this.getOffsetTopContentElement(step), (this.getOffsetTopContentElement(step) + step.offsetHeight))) {
+                return index;
+            }
+        }
+        ;
+        return null;
+    }
     /**
     * Helper method to find Step element by given starting point and y-position
     * and delta-y. Starting point is there to optimize performance a bit as

@@ -42,7 +42,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private _handleTouchCancel;
     handleMouseDown(event: MouseEvent): void;
     _handleMouseUp(event: MouseEvent): void;
-    private _handleMouseUpOuside;
+    private _handleMouseUpOutside;
     private _handleMouseMove;
     private _handleTap;
     private handleMoveOrResize;
@@ -66,5 +66,6 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private updateStepYPosition;
     private updateStepResizingRight;
     private updateStepResizingLeft;
+    private _getRelativeCapturePointY;
 }
 export {};

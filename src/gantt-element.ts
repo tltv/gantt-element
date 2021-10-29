@@ -167,6 +167,8 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     this.initGrid(this._container, this._content);
     super.firstUpdated(changedProperties);
     this._resizeObserver.observe(this);
+    this.addEventListener('touchstart', this._handleGanttTouchStart);
+    this.addEventListener('mousedown', this._handleGanttMouseDown);
   }
 
   updated(changedProperties: any) {
@@ -336,5 +338,13 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
       return false;
     }
     return this._timeline.isTimelineOverflowingHorizontally();
+  }
+
+  private _handleGanttTouchStart(event: TouchEvent) {
+    this.handleTouchStart(event);
+  }
+
+  private _handleGanttMouseDown(event: MouseEvent) {
+    this.handleMouseDown(event);
   }
 }

@@ -60,6 +60,13 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
         this.addEventListener('touchcancel', this._handleTouchCancel);
       }, GanttEventsBase.TAP_TIME_WINDOW);
       event.preventDefault();
+    } else {
+      this.setEventCapturePoint(event, null);
+      this.addEventListener('touchend', this._handleTouchEnd);
+      this.touchStartTimeoutId = setTimeout(() => {
+        this.insideTapTimeWindow = false;
+      }, GanttEventsBase.TAP_TIME_WINDOW);
+      event.preventDefault();
     }
   }
 
@@ -96,13 +103,16 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.setEventCapturePoint(event, <GanttStepElement>event.target);
       this.addEventListener('mouseup', this._handleMouseUp);
       this.addEventListener('mousemove', this._handleMouseMove);
-      window.addEventListener('mouseup', this._handleMouseUpOuside);
+      window.addEventListener('mouseup', this._handleMouseUpOutside);
       window.GanttElementEvents = this;
+    } else {
+      this.setEventCapturePoint(event, null);
+      this.addEventListener('mouseup', this._handleMouseUp);
+      window.addEventListener('mouseup', this._handleMouseUpOutside);
     }
   }
 
   public _handleMouseUp(event: MouseEvent) {
-    console.log("INSIDE");
     if(this.capturePoint && this.movePoint && this.capturePoint[0] == this.movePoint[0] && this.capturePoint[1] == this.movePoint[1])  {
       this._handleTap(event);
     } else {
@@ -112,7 +122,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     event.stopPropagation();
   }
 
-  private _handleMouseUpOuside(event: MouseEvent) {
+  private _handleMouseUpOutside(event: MouseEvent) {
     if(!window.GanttElementEvents) {
       console.error("Attempted to end Gantt mouse events without window.GanttElementEvents target gantt element");
       return;
@@ -128,7 +138,24 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   private _handleTap(event: Event) {
-    // TODO
+    if(event.target instanceof GanttStepElement) {
+      this.dispatchEvent(new CustomEvent("ganttStepClick", {
+        detail: {
+          uid: event.target.uid,
+          start: event.target.start,
+          end: event.target.end,
+          step: event.target,
+          event: event
+        }
+      }));
+    } else {
+      this.dispatchEvent(new CustomEvent("ganttBackgroundClick", {
+        detail: {
+          index: this.findStepIndexAt(GanttUtil.getPageY(event, this._container) - (this._container.offsetTop + this.offsetTop)),
+          event: event
+        }
+      }));
+    }
   }
 
   private handleMoveOrResize(event: Event) {
@@ -180,7 +207,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     this.clearEventCapturePoint();
     this.removeEventListener('mouseup', this._handleMouseUp);
     this.removeEventListener('mousemove', this._handleMouseMove);
-    window.removeEventListener('mouseup', this._handleMouseUpOuside);
+    window.removeEventListener('mouseup', this._handleMouseUpOutside);
     window.GanttElementEvents = null;
   }
 
@@ -197,13 +224,16 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
 
   private setEventCapturePoint(event: Event, step: GanttStepElement) {
     this._eventTargetStep = step;
+    this.capturePoint = GanttUtil.getPointForEvent(event, this._container);
+    this.movePoint = [this.capturePoint[0], this.capturePoint[1]];
+    if (!step) {
+      return;
+    }
     this.capturePointLeftPercentage = step.style.left;
     this.capturePointWidthPercentage = step.style.width;
     this.capturePointTopPx = this.getOffsetTopContentElement(step);
     this.capturePointLeftPx = step.offsetLeft;
     this.capturePointWidthPx = step.clientWidth;
-    this.capturePoint = GanttUtil.getPointForEvent(event, this._container);
-    this.movePoint = [this.capturePoint[0], this.capturePoint[1]];
 
     if (this.detectResizing(step)) {
       step.resizing = true;
@@ -397,7 +427,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       offsetY = parseInt(step.owner.style.top, 10);
     }
     let stepTop: number = parseInt(step.style.top, 10) + offsetY;
-    let maxStepEdgeDeltaUp: number = stepTop - (this.capturePoint[1] - (this._container.offsetTop + this.offsetTop));
+    let maxStepEdgeDeltaUp: number = stepTop - this._getRelativeCapturePointY();
     let maxStepEdgeDeltaDown: number = stepHeight + maxStepEdgeDeltaUp;
 
     if (deltay <= maxStepEdgeDeltaUp) {
@@ -428,4 +458,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
   }
 
+  private _getRelativeCapturePointY(): number {
+    return this.capturePoint[1] - (this._container.offsetTop + this.offsetTop);
+  }
 }

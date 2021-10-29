@@ -52,6 +52,12 @@
       </div>
     </div>
     <script>
+      document.getElementById("gantt").addEventListener("ganttBackgroundClick", function(event) {
+        console.log(`Gantt clicked at index: ${event.detail.index}`);
+      });
+      document.getElementById("gantt").addEventListener("ganttStepClick", function(event) {
+        console.log(`Step ${event.detail.uid} clicked`);
+      });
       document.getElementById("gantt").addEventListener("ganttStepMove", function(event) {
         console.log("Received ganttStepMove event");
 
