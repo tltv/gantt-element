@@ -1,4 +1,5 @@
-import { LitElement, html, css, property, customElement } from 'lit-element';
+import { LitElement, html, css } from 'lit';
+import {property, customElement} from 'lit/decorators.js';
 import { Resolution } from 'tltv-timeline-element/dist/src/model/Resolution.js';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepElement } from './gantt-step-element';

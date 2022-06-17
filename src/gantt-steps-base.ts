@@ -1,4 +1,5 @@
-import { LitElement, property } from 'lit-element';
+import { LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
 import { query } from 'lit-element/decorators.js';
 import { GanttStepElement } from './gantt-step-element';
 import { GanttSubStepsBase } from './gantt-substeps-base';

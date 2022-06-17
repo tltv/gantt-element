@@ -18,7 +18,7 @@ export declare class GanttElement extends GanttElement_base {
     weekdayNames: string[];
     _resizeObserver: ResizeObserver;
     scrollbarWidth: number;
-    static get styles(): import("lit-element").CSSResult;
+    static get styles(): import("lit").CSSResult;
     render(): import("lit-html").TemplateResult<1>;
     constructor();
     firstUpdated(changedProperties: any): void;

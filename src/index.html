@@ -80,6 +80,15 @@
       });
       document.getElementById("gantt").addEventListener("ganttStepResize", function(event) {
         console.log("Received ganttStepResize event");
+        if(event.detail.step.substep) {
+          // update owner by changed sub-step
+          if(event.detail.step.owner.start > event.detail.step.start) {
+            event.detail.step.owner.start = event.detail.step.start;
+          } else if(event.detail.step.owner.end < event.detail.step.end) {
+            event.detail.step.owner.end = event.detail.step.end;
+          }
+        }
+        
       });
 
       function addNewStep() {

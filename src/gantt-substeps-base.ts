@@ -1,4 +1,5 @@
-import { LitElement, property } from 'lit-element';
+import { LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
 import { GanttStepElement } from './gantt-step-element';
 import { GanttStepBase } from './gantt-step-base';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';

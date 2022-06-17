@@ -1,4 +1,5 @@
-import { LitElement, html, css, property, customElement } from 'lit-element';
+import { LitElement, html, css } from 'lit';
+import { property, customElement } from 'lit/decorators.js';
 import { GanttElement } from './gantt-element';
 import { GanttSubStepsBase } from './gantt-substeps-base';
 

@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 import { GanttStepElement } from './gantt-step-element';
 import 'tltv-timeline-element/dist/src/timeline-element.js';
 export interface GanttStepsInterface {

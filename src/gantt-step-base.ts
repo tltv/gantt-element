@@ -1,4 +1,5 @@
-import { LitElement, property } from 'lit-element';
+import { LitElement } from 'lit';
+import { property } from 'lit/decorators.js';
 import { toDate, format } from 'date-fns-tz';
 
 export class GanttStepBase extends LitElement {

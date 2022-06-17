@@ -1,4 +1,4 @@
-import { LitElement } from 'lit-element';
+import { LitElement } from 'lit';
 declare type Constructor<T = object> = {
     new (...args: any[]): T;
     prototype: T;

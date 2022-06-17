@@ -1,4 +1,4 @@
-import { LitElement, property } from 'lit-element';
+import { LitElement, html } from 'lit';
 import { query } from 'lit-element/decorators.js';
 import { TimelineElement } from 'tltv-timeline-element/dist/src/timeline-element.js';
 

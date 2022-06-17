@@ -8,8 +8,8 @@
     "@types/resize-observer-browser": "^0.1.5",
     "date-fns": "^2.25.0",
     "date-fns-tz": "^1.1.6",
-    "lit-element": "^3.0.1",
-    "tltv-timeline-element": "^1.0.12"
+    "lit": "^2.2.6",
+    "tltv-timeline-element": "^1.0.13"
   },
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
