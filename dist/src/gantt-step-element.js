@@ -38,11 +38,23 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
             cursor: e-resize;
         }
 
+        .step-label {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            margin: 3px;
+        }
         :host(.has-sub-steps:hover) > .step-label {
             width: 100%;
             background-color: rgba(246, 255, 99, 0.3);
             border-radius: 6px;
             transform: translate(0,-22px);
+        }
+        :host(.has-sub-steps:first-child:hover) {
+            z-index: 2;
+        }
+        :host(.has-sub-steps:first-child:hover) > .step-label {
+            transform: translate(0, 22px);
         }
         :host(.has-sub-steps:hover) > .step-label:hover {
             cursor: move;
@@ -53,12 +65,6 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
         :host(.has-sub-steps) > .step-label {
             position: absolute;
             max-width: 100%;
-        }
-        .step-label {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            margin: 3px;
         }
 
         :host(.step.invalid) {
@@ -117,7 +123,7 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
         this.uid = (this.substep) ? `${this.owner.uid}-${this.position}` : `${this.position}`;
     }
     recalculateLeft() {
-        this.getGanttElement().getTimeline()
+        this.getGanttElement().then(gantt => gantt.getTimeline()
             .then(timeline => {
             if (this.substep) {
                 this.calculateSubStepLeft(timeline).then(newLeft => {
@@ -126,14 +132,14 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
                 });
             }
             else {
-                this.stepLeft = timeline.getLeftPositionPercentageStringForDate(this.start, this.getGanttElement().getContentWidth());
+                this.stepLeft = timeline.getLeftPositionPercentageStringForDate(this.start, gantt.getContentWidth());
                 this._substeps.forEach(substep => substep.refresh());
                 this.updateLeft();
             }
-        });
+        }));
     }
     recalculateWidth() {
-        this.getGanttElement().getTimeline()
+        this.getGanttElement().then(gantt => gantt.getTimeline()
             .then(timeline => {
             if (this.substep) {
                 this.calculateSubStepWidth(timeline).then(newWidth => {
@@ -146,23 +152,32 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
                 this._substeps.forEach(substep => substep.refresh());
                 this.updateWidth();
             }
-        });
+        }));
     }
     refresh() {
         this.recalculateLeft();
         this.recalculateWidth();
     }
-    getGanttElement() {
+    async getGanttElement() {
+        let getEl = () => this.parentElement;
         if (this.substep) {
-            return this.parentElement.parentElement;
+            getEl = () => this.parentElement.parentElement;
         }
-        return this.parentElement;
+        let test = () => {
+            let el = getEl();
+            return el && el.isConnected && el.getTimeline;
+        };
+        let continueWhenGanttReady = function (resolve, isReady, notReady) {
+            requestAnimationFrame(() => (isReady()) ? resolve() : notReady(resolve, isReady, notReady));
+        };
+        await new Promise((resolve) => requestAnimationFrame(() => continueWhenGanttReady(resolve, test, continueWhenGanttReady)));
+        return getEl();
     }
     _handleTouchStart(event) {
-        this.getGanttElement().handleTouchStart(event);
+        this.getGanttElement().then(gantt => gantt.handleTouchStart(event));
     }
     _handleMouseDown(event) {
-        this.getGanttElement().handleMouseDown(event);
+        this.getGanttElement().then(gantt => gantt.handleMouseDown(event));
     }
 };
 GanttStepElement.RESIZE_WIDTH = 10;

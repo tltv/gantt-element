@@ -13,7 +13,7 @@ export declare class GanttStepElement extends GanttSubStepsBase {
     private recalculateLeft;
     private recalculateWidth;
     refresh(): void;
-    getGanttElement(): GanttElement;
+    getGanttElement(): Promise<GanttElement>;
     private _handleTouchStart;
     private _handleMouseDown;
 }
