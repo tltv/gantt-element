@@ -160,13 +160,23 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
     }
     async getGanttElement() {
         let getEl = () => this.parentElement;
+        let test = () => {
+            let el = this.parentElement;
+            let result = el && el.isConnected;
+            return result && el.getTimeline;
+        };
         if (this.substep) {
             getEl = () => this.parentElement.parentElement;
+            test = () => {
+                let el = this.parentElement;
+                let result = el && el.isConnected;
+                if (result) {
+                    el = el.parentElement;
+                    result = el && el.isConnected;
+                }
+                return result && el.getTimeline;
+            };
         }
-        let test = () => {
-            let el = getEl();
-            return el && el.isConnected && el.getTimeline;
-        };
         let continueWhenGanttReady = function (resolve, isReady, notReady) {
             requestAnimationFrame(() => (isReady()) ? resolve() : notReady(resolve, isReady, notReady));
         };
