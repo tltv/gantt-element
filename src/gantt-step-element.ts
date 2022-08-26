@@ -35,11 +35,23 @@ export class GanttStepElement extends GanttSubStepsBase {
             cursor: e-resize;
         }
 
+        .step-label {
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            margin: 3px;
+        }
         :host(.has-sub-steps:hover) > .step-label {
             width: 100%;
             background-color: rgba(246, 255, 99, 0.3);
             border-radius: 6px;
             transform: translate(0,-22px);
+        }
+        :host(.has-sub-steps:first-child:hover) {
+            z-index: 2;
+        }
+        :host(.has-sub-steps:first-child:hover) > .step-label {
+            transform: translate(0, 22px);
         }
         :host(.has-sub-steps:hover) > .step-label:hover {
             cursor: move;
@@ -50,12 +62,6 @@ export class GanttStepElement extends GanttSubStepsBase {
         :host(.has-sub-steps) > .step-label {
             position: absolute;
             max-width: 100%;
-        }
-        .step-label {
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
-            margin: 3px;
         }
 
         :host(.step.invalid) {
