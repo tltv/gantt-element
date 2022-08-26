@@ -129,7 +129,7 @@ export class GanttStepElement extends GanttSubStepsBase {
     }
 
     private recalculateLeft() {
-        this.getGanttElement().getTimeline()
+        this.getGanttElement().then(gantt => gantt.getTimeline()
             .then(timeline => {
                 if (this.substep) {
                     this.calculateSubStepLeft(timeline).then(newLeft => {
@@ -137,15 +137,15 @@ export class GanttStepElement extends GanttSubStepsBase {
                         this.updateLeft();
                     });
                 } else {
-                    this.stepLeft = timeline.getLeftPositionPercentageStringForDate(this.start, this.getGanttElement().getContentWidth());
+                    this.stepLeft = timeline.getLeftPositionPercentageStringForDate(this.start, gantt.getContentWidth());
                     this._substeps.forEach(substep => substep.refresh());
                     this.updateLeft();
                 }
-            });
+            }));
     }
 
     private recalculateWidth() {
-        this.getGanttElement().getTimeline()
+        this.getGanttElement().then(gantt => gantt.getTimeline()
             .then(timeline => {
                 if (this.substep) {
                     this.calculateSubStepWidth(timeline).then(newWidth => {
@@ -158,7 +158,7 @@ export class GanttStepElement extends GanttSubStepsBase {
                     this.updateWidth();
                 }
                 
-            });
+            }));
     }
 
     public refresh() {
@@ -166,19 +166,28 @@ export class GanttStepElement extends GanttSubStepsBase {
         this.recalculateWidth();
     }
 
-    public getGanttElement(): GanttElement {
+    public async getGanttElement(): Promise<GanttElement> {
+        let getEl = () => <GanttElement>this.parentElement;
         if (this.substep) {
-            return <GanttElement>this.parentElement.parentElement;
+            getEl = () => <GanttElement>this.parentElement.parentElement;
         }
-        return <GanttElement>this.parentElement;
+        let test = () => {
+            let el = getEl();
+            return el && el.isConnected && el.getTimeline;
+        };
+        let continueWhenGanttReady = function (resolve: any, isReady: Function, notReady: Function) {
+            requestAnimationFrame(() => (isReady()) ? resolve() : notReady(resolve, isReady, notReady));
+        }
+        await new Promise((resolve) => requestAnimationFrame(() => continueWhenGanttReady(resolve, test, continueWhenGanttReady)));
+        return getEl();
     }
 
     private _handleTouchStart(event: TouchEvent) {
-        this.getGanttElement().handleTouchStart(event);
+        this.getGanttElement().then(gantt => gantt.handleTouchStart(event));
     }
 
     private _handleMouseDown(event: MouseEvent) {
-        this.getGanttElement().handleMouseDown(event);
+        this.getGanttElement().then(gantt => gantt.handleMouseDown(event));
     }
     
 }
