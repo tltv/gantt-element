@@ -20,6 +20,7 @@ export declare class GanttStepsBase extends LitElement implements GanttStepsInte
     getContentHeight(): number;
     getContent(): HTMLDivElement;
     getOffsetTopContentElement(element: HTMLElement): number;
+    getOffsetLeftContentElement(element: HTMLElement): number;
     handleSlotchange(e: Event): void;
     findStepIndexAt(topY: number): number;
     /**

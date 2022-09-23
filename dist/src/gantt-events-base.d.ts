@@ -55,6 +55,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private detectResizing;
     private isResizingLeft;
     private isResizingRight;
+    private getStepOffsetLeft;
     private moveStepHorizontally;
     private updateMoveElementFor;
     private hideMoveElement;

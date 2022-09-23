@@ -48,6 +48,17 @@ export class GanttStepsBase extends LitElement implements GanttStepsInterface {
         }
     }
 
+    getOffsetLeftContentElement(element: HTMLElement): number {
+        if ((element instanceof GanttSubStepsBase && element.substep) || element.offsetParent === this._content) {
+            return element.offsetLeft;
+        } else if (element.offsetParent === this) {
+            // FireFox reports root element as offsetParent for slotted steps
+            return element.offsetLeft - this._container.offsetLeft;
+        } else {
+            throw "element.offsetParent should be either content or gantt element";
+        }
+    }
+
     handleSlotchange(e: Event) {
         let slot: HTMLSlotElement = <HTMLSlotElement>e.target;
         this._steps = slot.assignedElements({ flatten: true }).map(element => <GanttStepElement>element);

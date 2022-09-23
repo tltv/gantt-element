@@ -234,19 +234,24 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     }
     isResizingLeft(step) {
         if (step.substep) {
-            return this.movePoint[0] <= (this.getContent().offsetLeft
-                + step.owner.offsetLeft + step.offsetLeft + GanttStepElement.RESIZE_WIDTH);
+            return this.movePoint[0] <= (this.getStepOffsetLeft(step) + GanttStepElement.RESIZE_WIDTH);
         }
-        return this.movePoint[0] <= (this._container.offsetLeft + step.offsetLeft + GanttStepElement.RESIZE_WIDTH);
+        return this.movePoint[0] <= (this.getStepOffsetLeft(step) + GanttStepElement.RESIZE_WIDTH);
     }
     isResizingRight(step) {
         if (step.substep) {
-            return this.movePoint[0] >= (this.getContent().offsetLeft
-                + step.owner.offsetLeft + step.offsetLeft
+            return this.movePoint[0] >= (this.getStepOffsetLeft(step)
                 + step.offsetWidth
                 + -GanttStepElement.RESIZE_WIDTH);
         }
-        return this.movePoint[0] >= (this._container.offsetLeft + step.offsetLeft + step.offsetWidth + -GanttStepElement.RESIZE_WIDTH);
+        return this.movePoint[0] >= (this.getStepOffsetLeft(step) + step.offsetWidth + -GanttStepElement.RESIZE_WIDTH);
+    }
+    getStepOffsetLeft(step) {
+        if (step.substep) {
+            return this.offsetLeft + this.getContent().offsetLeft
+                + step.owner.offsetLeft + step.offsetLeft;
+        }
+        return this.offsetLeft + this._container.offsetLeft + step.offsetLeft;
     }
     moveStepHorizontally(step, deltax) {
         step.style.left = this.capturePointLeftPx + deltax + "px";
@@ -281,7 +286,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     * CSS attributes 'left' and 'width' are updated (unit in pixels).
     */
     moveCompleted(step, y, event) {
-        let deltay = y - this.capturePoint[1];
+        let deltay = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
         console.log("Position delta y: " + deltay + "px" + " capture point y is " + this.capturePoint[1]);
         let newPosition = this.findStepElement(step, this.capturePointTopPx, (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
         this.internalMoveOrResizeCompleted(step, newPosition, true, event);
