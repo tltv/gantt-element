@@ -5,11 +5,11 @@ import { GanttStepElement } from './gantt-step-element';
 import { GanttSubStepsBase } from './gantt-substeps-base';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import 'tltv-timeline-element/dist/src/timeline-element.js';
+import { GanttScrollerMixin } from './gantt-scroller-mixin';
 
 export interface GanttStepsInterface {
     _steps: Array<GanttStepElement>;
     _ganttContainer: HTMLDivElement;
-    _container: HTMLDivElement;
     _content: HTMLDivElement;
     getContentWidth(): number;
     getContent(): HTMLDivElement;
@@ -17,12 +17,11 @@ export interface GanttStepsInterface {
     findStepElement(startFromStep: GanttStepElement, startTopY: number, startBottomY: number, newY: number, deltay: number): GanttStepElement;
 }
 
-export class GanttStepsBase extends LitElement implements GanttStepsInterface {
+export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements GanttStepsInterface {
 
     _steps: Array<GanttStepElement> = [];
     
     @query('#gantt-container') _ganttContainer: HTMLDivElement;
-    @query('#container') _container: HTMLDivElement;
     @query('#content') _content: HTMLDivElement;
 
     public getContentWidth() {

@@ -9,7 +9,8 @@ import { query } from 'lit-element/decorators.js';
 import { GanttSubStepsBase } from './gantt-substeps-base';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import 'tltv-timeline-element/dist/src/timeline-element.js';
-export class GanttStepsBase extends LitElement {
+import { GanttScrollerMixin } from './gantt-scroller-mixin';
+export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
     constructor() {
         super(...arguments);
         this._steps = [];
@@ -120,9 +121,6 @@ export class GanttStepsBase extends LitElement {
 __decorate([
     query('#gantt-container')
 ], GanttStepsBase.prototype, "_ganttContainer", void 0);
-__decorate([
-    query('#container')
-], GanttStepsBase.prototype, "_container", void 0);
 __decorate([
     query('#content')
 ], GanttStepsBase.prototype, "_content", void 0);

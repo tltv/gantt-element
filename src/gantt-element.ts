@@ -170,6 +170,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     this._resizeObserver.observe(this);
     this.addEventListener('touchstart', this._handleGanttTouchStart);
     this.addEventListener('mousedown', this._handleGanttMouseDown);
+    this.dispatchEvent(new Event('gantt-element-ready'));
   }
 
   updated(changedProperties: any) {
@@ -185,10 +186,13 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   }
 
   public updateSize() {
-    this._timeline.updateWidths();
-    this.updateGanttContainerStyle();
-    this.updateContainerStyle();
-    this.updateContentWidth();
+    let self = this;
+    this.getTimeline().then(timeline => {
+      timeline.updateWidths();
+      self.updateGanttContainerStyle();
+      self.updateContainerStyle();
+      self.updateContentWidth();
+    })
   }
 
   async timelineUpdated () {

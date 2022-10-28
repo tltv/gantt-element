@@ -4,17 +4,19 @@ import 'tltv-timeline-element/dist/src/timeline-element.js';
 export interface GanttStepsInterface {
     _steps: Array<GanttStepElement>;
     _ganttContainer: HTMLDivElement;
-    _container: HTMLDivElement;
     _content: HTMLDivElement;
     getContentWidth(): number;
     getContent(): HTMLDivElement;
     handleSlotchange(e: Event): void;
     findStepElement(startFromStep: GanttStepElement, startTopY: number, startBottomY: number, newY: number, deltay: number): GanttStepElement;
 }
-export declare class GanttStepsBase extends LitElement implements GanttStepsInterface {
+declare const GanttStepsBase_base: typeof LitElement & {
+    new (...args: any[]): import("./gantt-scroller-mixin").GanttScrollerInterface;
+    prototype: import("./gantt-scroller-mixin").GanttScrollerInterface;
+};
+export declare class GanttStepsBase extends GanttStepsBase_base implements GanttStepsInterface {
     _steps: Array<GanttStepElement>;
     _ganttContainer: HTMLDivElement;
-    _container: HTMLDivElement;
     _content: HTMLDivElement;
     getContentWidth(): number;
     getContentHeight(): number;
@@ -41,3 +43,4 @@ export declare class GanttStepsBase extends LitElement implements GanttStepsInte
     private isBetween;
     getSteps(): Array<GanttStepElement>;
 }
+export {};
