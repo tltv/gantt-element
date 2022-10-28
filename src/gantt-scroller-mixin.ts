@@ -86,16 +86,6 @@ export const GanttScrollerMixin = <T extends Constructor<LitElement>>(
                 ganttElement._skipScrollElementScroll = false;
             });
         }
-
-        disconnectedCallback() {
-            super.disconnectedCallback();
-            if(this._scrollElement) {
-                this._scrollElement.removeEventListener('scroll', this._handleScrollElementScroll);
-            }
-            if(this._container) {
-                this._container.removeEventListener('scroll', this._handleContainerScroll);
-            }
-          }
    
     }
     return GanttScrollerMixin;
