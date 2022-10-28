@@ -41,13 +41,13 @@ export const GanttScrollerMixin = <T extends Constructor<LitElement>>(
                 return;
             }
             this._scrollElement = scrollElement;
+            let self = this;
             this.updateComplete.then(() => {
-                let self = this;
-                let container = this._container;
-                this._skipScrollElementScroll = false;
-                this._skipContainerScroll = false;
-                this._handleScrollElementScroll = () => self._onHandleScrollElementScroll(self);
-                this._handleContainerScroll = () => self._onHandleContainerScroll(self);
+                let container = self._container;
+                self._skipScrollElementScroll = false;
+                self._skipContainerScroll = false;
+                self._handleScrollElementScroll = () => self._onHandleScrollElementScroll(self);
+                self._handleContainerScroll = () => self._onHandleContainerScroll(self);
                 scrollElement.addEventListener('scroll', self._handleScrollElementScroll);
                 container.addEventListener('scroll', self._handleContainerScroll);
             });
@@ -89,9 +89,12 @@ export const GanttScrollerMixin = <T extends Constructor<LitElement>>(
 
         disconnectedCallback() {
             super.disconnectedCallback();
-            let self = this;
-            this._scrollElement.removeEventListener('scroll', self._handleScrollElementScroll);
-            this._container.removeEventListener('scroll', self._handleContainerScroll);
+            if(this._scrollElement) {
+                this._scrollElement.removeEventListener('scroll', this._handleScrollElementScroll);
+            }
+            if(this._container) {
+                this._container.removeEventListener('scroll', this._handleContainerScroll);
+            }
           }
    
     }
