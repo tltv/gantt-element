@@ -1,6 +1,6 @@
 {
   "name": "tltv-gantt-element",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Gantt web component",
   "main": "gantt-element.js",
   "module": "gantt-element.js",
