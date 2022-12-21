@@ -23,7 +23,7 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         this._resizeObserver = new ResizeObserver(() => {
             this.updateSize();
         });
-        this.scrollbarWidth = 18; // pixels //TODO calculate scrollbar size
+        this.scrollbarWidth = 18;
     }
     static get styles() {
         return css `
@@ -133,6 +133,7 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
     `;
     }
     firstUpdated(changedProperties) {
+        this.scrollbarWidth = this.calculateScrollbarWidth();
         this.initGrid(this._container, this._content);
         super.firstUpdated(changedProperties);
         this._resizeObserver.observe(this);
@@ -177,6 +178,17 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         let heightOfSteps = this._steps.map(step => step.getStepHeight()).reduce((a, b) => a + b);
         console.log(`GanttElement.updateContentHeight calculated ${heightOfSteps}px height for content by steps`);
         this.getContent().style.height = heightOfSteps + 'px';
+    }
+    calculateScrollbarWidth() {
+        const outer = document.createElement('div');
+        outer.style.visibility = 'hidden';
+        outer.style.overflow = 'scroll';
+        document.body.appendChild(outer);
+        const inner = document.createElement('div');
+        outer.appendChild(inner);
+        const scrollbarWidth = (outer.offsetWidth - inner.offsetWidth);
+        outer.parentNode.removeChild(outer);
+        return scrollbarWidth;
     }
     convertGanttHeightToContainerHeight() {
         let ganttHeight = this.ownerDocument.defaultView.getComputedStyle(this).getPropertyValue("--gantt-element-height");

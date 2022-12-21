@@ -28,6 +28,7 @@ export declare class GanttElement extends GanttElement_base {
     timelineUpdated(): Promise<void>;
     updateContentWidth(): void;
     updateContentHeight(): void;
+    calculateScrollbarWidth(): number;
     private convertGanttHeightToContainerHeight;
     private updateGanttContainerStyle;
     private updateContainerStyle;

@@ -63,9 +63,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         this.removeEventListener('touchcancel', this._handleTouchCancel);
     }
     _handleTouchMove(event) {
-        this.handleMoveOrResize(event);
-        // Prevent the browser from processing emulated mouse events.
-        event.preventDefault();
+        if (this.handleMoveOrResize(event)) {
+            // Prevent the browser from processing emulated mouse events.
+            event.preventDefault();
+        }
     }
     _handleTouchCancel(event) {
         clearTimeout(this.touchStartTimeoutId);
@@ -138,7 +139,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     handleMoveOrResize(event) {
         this.movePoint = GanttUtil.getPointForEvent(event, this._container);
         if (!this._eventTargetStep) {
-            return;
+            return false;
         }
         // calculate delta x and y by original position and the current one.
         let deltax = GanttUtil.getPageX(event, this._container) - this.capturePoint[0];
@@ -162,6 +163,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
                 this.updateStepYPosition(this._eventTargetStep, deltay);
             }
         }
+        return true;
     }
     handleMouseOrTouchUp(event) {
         if (!this._eventTargetStep) {
