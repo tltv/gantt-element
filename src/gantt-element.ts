@@ -175,7 +175,11 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
   }
 
   updated(changedProperties: any) {
-    if (changedProperties.has('resolution') || changedProperties.has('start') || changedProperties.has('end')) {
+    if (changedProperties.has('resolution') 
+    || changedProperties.has('start') 
+    || changedProperties.has('end') 
+    || changedProperties.has('yearRowVisible') 
+    || changedProperties.has('monthRowVisible')) {
       this.timelineUpdated();
     }
     super.updated(changedProperties);
@@ -202,6 +206,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     this._steps.forEach(step => step.refresh());
     this.updateContainerStyle();
   }
+  
 
   public updateContentWidth() {
     if((ElementUtil.getHeight(this.getContent()) > ElementUtil.getHeight(this._container))) {
