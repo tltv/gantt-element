@@ -71,11 +71,11 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
     }
     constructor() {
         super();
-        this.style.visibility = 'hidden';
     }
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);
         this.classList.add("step");
+        this.style.visibility = 'hidden';
         this.style.setProperty('--gantt-step-height', this.stepHeight);
         this.addEventListener('touchstart', this._handleTouchStart);
         this.addEventListener('mousedown', this._handleMouseDown);
