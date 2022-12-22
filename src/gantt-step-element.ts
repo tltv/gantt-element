@@ -72,6 +72,7 @@ export class GanttStepElement extends GanttSubStepsBase {
 
     constructor() {
         super();
+        this.style.visibility = 'hidden';
     }
 
     firstUpdated(changedProperties: any) {

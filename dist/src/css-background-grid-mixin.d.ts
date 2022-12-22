@@ -1,5 +1,5 @@
 import { LitElement } from 'lit';
-declare type Constructor<T = object> = {
+type Constructor<T = object> = {
     new (...args: any[]): T;
     prototype: T;
 };

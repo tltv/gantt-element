@@ -1,6 +1,6 @@
 import { LitElement } from 'lit';
 import { TimelineElement } from 'tltv-timeline-element/dist/src/timeline-element.js';
-declare type Constructor<T = object> = {
+type Constructor<T = object> = {
     new (...args: any[]): T;
     prototype: T;
 };

@@ -8,9 +8,6 @@ import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { GanttSubStepsBase } from './gantt-substeps-base';
 let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
-    constructor() {
-        super();
-    }
     static get styles() {
         return css `
         :host {
@@ -71,6 +68,10 @@ let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
             visibility: hidden;
         }
         `;
+    }
+    constructor() {
+        super();
+        this.style.visibility = 'hidden';
     }
     firstUpdated(changedProperties) {
         super.firstUpdated(changedProperties);

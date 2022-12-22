@@ -48,6 +48,7 @@ export class GanttStepBase extends LitElement {
     protected updateLeft() {
         this.style.setProperty('--gantt-step-left', this.stepLeft);
         this.style.removeProperty("left");
+        this.style.removeProperty('visibility');
     }
 
     protected updateWidth() {

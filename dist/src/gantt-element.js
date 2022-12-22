@@ -11,20 +11,6 @@ import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js
 import { GanttEventsBase } from './gantt-events-base';
 import { BackgroundGridMixin } from './css-background-grid-mixin';
 let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
-    constructor() {
-        super();
-        this.resolution = Resolution.Day;
-        this.zone = "Europe/London";
-        this.locale = "en-US";
-        this.firstDayOfWeek = 1; // sunday;
-        this.twelveHourClock = false;
-        this.monthRowVisible = true;
-        this.yearRowVisible = true;
-        this._resizeObserver = new ResizeObserver(() => {
-            this.updateSize();
-        });
-        this.scrollbarWidth = 18;
-    }
     static get styles() {
         return css `
       :host {
@@ -132,6 +118,20 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
     </div>
     `;
     }
+    constructor() {
+        super();
+        this.resolution = Resolution.Day;
+        this.zone = "Europe/London";
+        this.locale = "en-US";
+        this.firstDayOfWeek = 1; // sunday;
+        this.twelveHourClock = false;
+        this.monthRowVisible = true;
+        this.yearRowVisible = true;
+        this._resizeObserver = new ResizeObserver(() => {
+            this.updateSize();
+        });
+        this.scrollbarWidth = 18;
+    }
     firstUpdated(changedProperties) {
         this.scrollbarWidth = this.calculateScrollbarWidth();
         this.initGrid(this._container, this._content);
@@ -142,7 +142,11 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         this.dispatchEvent(new Event('gantt-element-ready'));
     }
     updated(changedProperties) {
-        if (changedProperties.has('resolution') || changedProperties.has('start') || changedProperties.has('end')) {
+        if (changedProperties.has('resolution')
+            || changedProperties.has('start')
+            || changedProperties.has('end')
+            || changedProperties.has('yearRowVisible')
+            || changedProperties.has('monthRowVisible')) {
             this.timelineUpdated();
         }
         super.updated(changedProperties);

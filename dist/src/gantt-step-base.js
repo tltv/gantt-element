@@ -20,6 +20,7 @@ export class GanttStepBase extends LitElement {
     updateLeft() {
         this.style.setProperty('--gantt-step-left', this.stepLeft);
         this.style.removeProperty("left");
+        this.style.removeProperty('visibility');
     }
     updateWidth() {
         this.style.setProperty('--gantt-step-width', this.stepWidth);
