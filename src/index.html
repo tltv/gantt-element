@@ -78,7 +78,7 @@
     </div>
     <script>
       document.getElementById("gantt").addEventListener("ganttBackgroundClick", function(event) {
-        console.log(`Gantt clicked at index: ${event.detail.index}`);
+        console.log(`Gantt clicked at index: ${event.detail.index}  date: ${event.detail.date}`);
       });
       document.getElementById("gantt").addEventListener("ganttStepClick", function(event) {
         console.log(`Step ${event.detail.uid} clicked`);

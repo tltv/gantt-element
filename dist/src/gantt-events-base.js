@@ -131,6 +131,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             this.dispatchEvent(new CustomEvent("ganttBackgroundClick", {
                 detail: {
                     index: this.findStepIndexAt(GanttUtil.getPageY(event, this._container) - (this._container.offsetTop + this.offsetTop)),
+                    date: this._timeline.getDateForLeftPosition(GanttUtil.getPageX(event, this._container) - (this._container.offsetLeft + this.offsetLeft)),
                     event: event
                 }
             }));
