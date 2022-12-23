@@ -27,11 +27,11 @@ export class GanttStepElement extends GanttSubStepsBase {
             user-select: none;
         }
 
-        :host([moving=true]) {
+        :host([moving]) {
             cursor: move;
         }
 
-        :host([resizing=true]) {
+        :host([resizing]) {
             cursor: e-resize;
         }
 
@@ -64,6 +64,27 @@ export class GanttStepElement extends GanttSubStepsBase {
             max-width: 100%;
         }
 
+        :host([resizablesteps][resizable]:not(.has-sub-steps)):before,
+        :host([resizablesteps]) ::slotted(gantt-step-element[resizable]):before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 100%;
+            cursor: e-resize;
+          }
+          :host([resizablesteps][resizable]:not(.has-sub-steps)):after,
+          :host([resizablesteps]) ::slotted(gantt-step-element[resizable]):after {
+              content: "";
+              position: absolute;
+              right: 0;
+              top: 0;
+              width: 10px;
+              height: 100%;
+              cursor: e-resize;
+          }
+          
         :host(.step.invalid) {
             visibility: hidden;
         }
@@ -129,6 +150,13 @@ export class GanttStepElement extends GanttSubStepsBase {
         this.uid = (this.substep) ? `${this.owner.uid}-${this.position}` : `${this.position}`;
     }
 
+    /** Synchronize properties from the gantt that are not handled automatically and are required by css, e.g. resize icon. */
+    private syncPropertiesFromGantt() {
+        this.getGanttElement().then(gantt => {
+            this.resizableSteps = gantt.resizableSteps;
+        });
+    }
+
     private recalculateLeft() {
         this.getGanttElement().then(gantt => gantt.getTimeline()
             .then(timeline => {
@@ -163,6 +191,7 @@ export class GanttStepElement extends GanttSubStepsBase {
     }
 
     public refresh() {
+        this.syncPropertiesFromGantt();
         this.recalculateLeft();
         this.recalculateWidth();
     }

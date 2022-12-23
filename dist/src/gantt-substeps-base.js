@@ -26,6 +26,9 @@ export class GanttSubStepsBase extends GanttStepBase {
             substep._setupForSubStep();
             substep.position = index;
         });
+        if (!this._substeps.length) {
+            this._setupForSubStep();
+        }
         console.log(`GanttSubStepsBase.handleSlotchange ended with ${this._substeps.length} step(s)`);
     }
     _setupForSubStep() {

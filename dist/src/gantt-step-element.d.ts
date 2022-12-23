@@ -10,6 +10,8 @@ export declare class GanttStepElement extends GanttSubStepsBase {
     private initUidByPosition;
     ownerUidUpdated(): Promise<void>;
     private updateUid;
+    /** Synchronize properties from the gantt that are not handled automatically and are required by css, e.g. resize icon. */
+    private syncPropertiesFromGantt;
     private recalculateLeft;
     private recalculateWidth;
     refresh(): void;

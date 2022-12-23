@@ -10,12 +10,15 @@ import { toDate, format } from 'date-fns-tz';
 export class GanttStepBase extends LitElement {
     constructor() {
         super(...arguments);
+        /* Step level 'resizable' property. Gantt level 'resizableSteps' overrides this, but this property should always keep "user's" value. */
         this.resizable = true;
         this.movable = true;
         this.backgroundColor = "#fff";
         this.stepWidth = "0px";
         this.stepLeft = "0px";
         this.stepHeight = "30px";
+        /* Should be in sync with Gantt's 'resizableSteps' property. */
+        this.resizableSteps = true;
     }
     updateLeft() {
         this.style.setProperty('--gantt-step-left', this.stepLeft);
@@ -34,10 +37,10 @@ __decorate([
     property({ reflect: true })
 ], GanttStepBase.prototype, "caption", void 0);
 __decorate([
-    property({ reflect: true })
+    property({ reflect: true, type: Boolean })
 ], GanttStepBase.prototype, "resizable", void 0);
 __decorate([
-    property({ reflect: true })
+    property({ reflect: true, type: Boolean })
 ], GanttStepBase.prototype, "movable", void 0);
 __decorate([
     property()
@@ -84,9 +87,12 @@ __decorate([
     property()
 ], GanttStepBase.prototype, "position", void 0);
 __decorate([
-    property({ reflect: true })
+    property({ reflect: true, type: Boolean })
 ], GanttStepBase.prototype, "resizing", void 0);
 __decorate([
-    property({ reflect: true })
+    property({ reflect: true, type: Boolean })
 ], GanttStepBase.prototype, "moving", void 0);
+__decorate([
+    property({ reflect: true, type: Boolean })
+], GanttStepBase.prototype, "resizableSteps", void 0);
 //# sourceMappingURL=gantt-step-base.js.map

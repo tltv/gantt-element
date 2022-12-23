@@ -111,25 +111,6 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
         border-right: 1px dashed #999;
         pointer-events: none;
 			}
-
-      :host([resizablesteps]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 10px;
-        height: 100%;
-        cursor: e-resize;
-      }
-      :host([resizablesteps]) ::slotted(gantt-step-element[resizable=true]:not(.has-sub-steps)):after {
-          content: "";
-          position: absolute;
-          right: 0;
-          top: 0;
-          width: 10px;
-          height: 100%;
-          cursor: e-resize;
-      }
     `;
   }
 
@@ -182,6 +163,10 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     || changedProperties.has('monthRowVisible')) {
       this.timelineUpdated();
     }
+    else if (changedProperties.has('resizableSteps'))  {
+      this._steps.forEach(step => step.refresh());
+    }
+    
     super.updated(changedProperties);
   }
 

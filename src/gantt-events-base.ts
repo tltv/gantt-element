@@ -163,6 +163,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
         }
       }));
     }
+    this.hideMoveElement();
   }
 
   private handleMoveOrResize(event: Event): boolean {
@@ -196,7 +197,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   private handleMouseOrTouchUp(event: Event) {
-    if (!this._eventTargetStep) { return; }
+    if (!this._eventTargetStep) { 
+      this.hideMoveElement();
+      return; 
+    }
 
     if (this._eventTargetStep.resizing) {
       console.log("Resizing done");

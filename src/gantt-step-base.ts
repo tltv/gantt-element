@@ -5,8 +5,9 @@ import { toDate, format } from 'date-fns-tz';
 export class GanttStepBase extends LitElement {
 
     @property({ reflect: true }) public caption: string;
-    @property({ reflect: true }) public resizable: boolean = true;
-    @property({ reflect: true }) public movable: boolean = true;
+    /* Step level 'resizable' property. Gantt level 'resizableSteps' overrides this, but this property should always keep "user's" value. */
+    @property({ reflect: true, type: Boolean }) public resizable: boolean = true;
+    @property({ reflect: true, type: Boolean }) public movable: boolean = true;
     /* Unique id. if not given, uid will match position automatically. Substep gets prefix from owner uid: <owner.uid>-<uid> */
     @property() public uid: string;
 
@@ -42,8 +43,10 @@ export class GanttStepBase extends LitElement {
     @property() public stepLeft = "0px";
     @property() public stepHeight = "30px";
     @property() public position: number;
-    @property({ reflect: true }) public resizing: boolean;
-    @property({ reflect: true }) public moving: boolean;
+    @property({ reflect: true, type: Boolean }) public resizing: boolean;
+    @property({ reflect: true, type: Boolean }) public moving: boolean;
+    /* Should be in sync with Gantt's 'resizableSteps' property. */
+    @property({ reflect: true, type: Boolean }) public resizableSteps: boolean = true;
 
     protected updateLeft() {
         this.style.setProperty('--gantt-step-left', this.stepLeft);

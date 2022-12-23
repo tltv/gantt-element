@@ -135,6 +135,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
                 }
             }));
         }
+        this.hideMoveElement();
     }
     handleMoveOrResize(event) {
         this.movePoint = GanttUtil.getPointForEvent(event, this._container);
@@ -167,6 +168,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     }
     handleMouseOrTouchUp(event) {
         if (!this._eventTargetStep) {
+            this.hideMoveElement();
             return;
         }
         if (this._eventTargetStep.resizing) {

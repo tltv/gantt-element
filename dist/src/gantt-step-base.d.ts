@@ -13,6 +13,7 @@ export declare class GanttStepBase extends LitElement {
     position: number;
     resizing: boolean;
     moving: boolean;
+    resizableSteps: boolean;
     protected updateLeft(): void;
     protected updateWidth(): void;
     getStepHeight(): number;
