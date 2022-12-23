@@ -6,6 +6,7 @@ import { GanttStepElement } from './gantt-step-element';
 import * as GanttUtil from './util/ganttUtil';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepsBase } from './gantt-steps-base';
+import { format } from 'date-fns-tz';
 
 export interface GanttEventsInterface {
   movableSteps: boolean;
@@ -149,8 +150,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.dispatchEvent(new CustomEvent("ganttStepClick", {
         detail: {
           uid: event.target.uid,
-          start: event.target.start,
-          end: event.target.end,
+          start: format(event.target.start, "yyyy-MM-dd'T'HH:mm:ss"),
+          end: format(event.target.end, "yyyy-MM-dd'T'HH:mm:ss"),
           step: event.target,
           event: event
         }
@@ -159,7 +160,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.dispatchEvent(new CustomEvent("ganttBackgroundClick", {
         detail: {
           index: this.findStepIndexAt(GanttUtil.getPageY(event, this._container) - (this._container.offsetTop + this.offsetTop)),
-          date: this._timeline.getDateForLeftPosition(GanttUtil.getPageX(event, this._container) - (this._container.offsetLeft + this.offsetLeft)),
+          date: format(this._timeline.getDateForLeftPosition(GanttUtil.getPageX(event, this._container) - (this._container.offsetLeft + this.offsetLeft)), "yyyy-MM-dd'T'HH:mm:ss"),
           event: event
         }
       }));
@@ -384,8 +385,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
         detail: {
           uid: step.uid,
           newUid: newStepUid,
-          start: startDate,
-          end: endDate,
+          start: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
+          end: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
           step: step,
           event: event
         }
@@ -394,8 +395,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.dispatchEvent(new CustomEvent("ganttStepResize", {
         detail: {
           uid: step.uid,
-          start: startDate,
-          end: endDate,
+          start: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
+          end: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
           step: step,
           event: event
         }
