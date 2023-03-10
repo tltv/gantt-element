@@ -50,6 +50,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private endMouseEvent;
     private resetStepPosition;
     private resetBarYPosition;
+    private calculateNewStepYPosition;
     private setEventCapturePoint;
     private clearEventCapturePoint;
     private detectResizing;

@@ -32,6 +32,8 @@ export declare class GanttStepsBase extends GanttStepsBase_base implements Gantt
     *
     * @param startFromStep
     *            Starting point element
+    * @param startTopY
+    * @param startBottomY
     * @param newY
     *            target y-axis position (relative to scroll container)
     * @param deltay

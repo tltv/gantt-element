@@ -72,6 +72,8 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
     *
     * @param startFromStep
     *            Starting point element
+    * @param startTopY
+    * @param startBottomY
     * @param newY
     *            target y-axis position (relative to scroll container)
     * @param deltay
@@ -89,30 +91,30 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
             return startFromStep;
         }
         let startIndex = this._steps.indexOf(startFromStep);
-        let stepCanditate;
+        let stepCandidate;
         let i = startIndex;
         if (deltay > 0) {
             i++;
             for (; i < this._steps.length; i++) {
-                stepCanditate = this._steps[i];
-                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate), (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
-                    return stepCanditate;
+                stepCandidate = this._steps[i];
+                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCandidate), (this.getOffsetTopContentElement(stepCandidate) + stepCandidate.offsetHeight))) {
+                    return stepCandidate;
                 }
             }
         }
         else if (deltay < 0) {
             i--;
             for (; i >= 0; i--) {
-                stepCanditate = this._steps[i];
-                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate), (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
-                    return stepCanditate;
+                stepCandidate = this._steps[i];
+                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCandidate), (this.getOffsetTopContentElement(stepCandidate) + stepCandidate.offsetHeight))) {
+                    return stepCandidate;
                 }
             }
         }
         return startFromStep;
     }
-    isBetween(v, min, max) {
-        return v >= min && v <= max;
+    isBetween(v, includeMin, includeMax) {
+        return v >= includeMin && v <= includeMax;
     }
     getSteps() {
         return this._steps;

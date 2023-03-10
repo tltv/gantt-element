@@ -84,6 +84,8 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
     *
     * @param startFromStep
     *            Starting point element
+    * @param startTopY
+    * @param startBottomY
     * @param newY
     *            target y-axis position (relative to scroll container)
     * @param deltay
@@ -102,32 +104,32 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
             return startFromStep;
         }
         let startIndex: number = this._steps.indexOf(startFromStep);
-        let stepCanditate: GanttStepElement;
+        let stepCandidate: GanttStepElement;
         let i: number = startIndex;
         if (deltay > 0) {
             i++;
             for (; i < this._steps.length; i++) {
-                stepCanditate = this._steps[i];
-                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate),
-                    (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
-                    return stepCanditate;
+                stepCandidate = this._steps[i];
+                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCandidate),
+                    (this.getOffsetTopContentElement(stepCandidate) + stepCandidate.offsetHeight))) {
+                    return stepCandidate;
                 }
             }
         } else if (deltay < 0) {
             i--;
             for (; i >= 0; i--) {
-                stepCanditate = this._steps[i];
-                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCanditate),
-                    (this.getOffsetTopContentElement(stepCanditate) + stepCanditate.offsetHeight))) {
-                    return stepCanditate;
+                stepCandidate = this._steps[i];
+                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCandidate),
+                    (this.getOffsetTopContentElement(stepCandidate) + stepCandidate.offsetHeight))) {
+                    return stepCandidate;
                 }
             }
         }
         return startFromStep;
     }
 
-    private isBetween(v: number, min: number, max: number): boolean {
-        return v >= min && v <= max;
+    private isBetween(v: number, includeMin: number, includeMax: number): boolean {
+        return v >= includeMin && v <= includeMax;
     }
 
     public getSteps(): Array<GanttStepElement> {

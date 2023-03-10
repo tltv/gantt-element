@@ -236,7 +236,24 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   private resetBarYPosition(step: GanttStepElement) {
-    step.style.top = this.capturePointTopPx + "px";
+    if(!step.substep) {
+      step.style.top = this.calculateNewStepYPosition(step) + "px";
+    } else {
+      // capturePointTopPx may be wrong sometimes, don't know why.
+      step.style.top = this.capturePointTopPx + "px";
+    }
+  }
+
+  private calculateNewStepYPosition(step: GanttStepElement) {
+    // calculate current 'top' value based on other steps.
+    var rowIndex = this.getSteps().indexOf(step);
+    if(rowIndex > 0) {
+      return parseInt(this.getSteps()[rowIndex-1].style.top, 10) + this.getElementHeightWithMargin(this.getSteps()[rowIndex-1]) + 1;
+    } else if(this.getSteps().length > 1) {
+      return parseInt(this.getSteps()[rowIndex+1].style.top, 10) - this.getElementHeightWithMargin(step) - 1;
+    } else {
+      return 0;
+    }
   }
 
   private setEventCapturePoint(event: Event, step: GanttStepElement) {
