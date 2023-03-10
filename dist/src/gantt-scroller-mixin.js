@@ -25,8 +25,6 @@ export const GanttScrollerMixin = (base) => {
             let self = this;
             this.updateComplete.then(() => {
                 let container = self._container;
-                self._skipScrollElementScroll = false;
-                self._skipContainerScroll = false;
                 self._handleScrollElementScroll = () => self._onHandleScrollElementScroll(self);
                 self._handleContainerScroll = () => self._onHandleContainerScroll(self);
                 scrollElement.addEventListener('scroll', self._handleScrollElementScroll);
@@ -34,36 +32,28 @@ export const GanttScrollerMixin = (base) => {
             });
         }
         _onHandleScrollElementScroll(ganttElement) {
-            if (ganttElement._skipScrollElementScroll) {
-                return;
-            }
+            let self = this;
+            clearTimeout(self._pauseContainerScroll);
             if (ganttElement._scrollElement.scrollTop == ganttElement._container.scrollTop) {
                 return;
             }
+            self._container.removeEventListener('scroll', self._handleContainerScroll);
             requestAnimationFrame(() => {
-                if (ganttElement._skipScrollElementScroll) {
-                    return;
-                }
-                ganttElement._skipContainerScroll = true;
                 ganttElement._container.scrollTop = ganttElement._scrollElement.scrollTop > 0 ? ganttElement._scrollElement.scrollTop : 0;
-                ganttElement._skipContainerScroll = false;
             });
+            self._pauseContainerScroll = setTimeout(() => self._container.addEventListener('scroll', self._handleContainerScroll), 50);
         }
         _onHandleContainerScroll(ganttElement) {
-            if (ganttElement._skipContainerScroll) {
-                return;
-            }
+            let self = this;
+            clearTimeout(self._pauseScrollElementScroll);
             if (ganttElement._scrollElement.scrollTop == ganttElement._container.scrollTop) {
                 return;
             }
+            self._scrollElement.removeEventListener('scroll', self._handleScrollElementScroll);
             requestAnimationFrame(() => {
-                if (ganttElement._skipContainerScroll) {
-                    return;
-                }
-                ganttElement._skipScrollElementScroll = true;
                 ganttElement._scrollElement.scrollTop = ganttElement._container.scrollTop > 0 ? ganttElement._container.scrollTop : 0;
-                ganttElement._skipScrollElementScroll = false;
             });
+            self._pauseScrollElementScroll = setTimeout(() => self._scrollElement.addEventListener('scroll', self._handleScrollElementScroll), 50);
         }
     }
     __decorate([
