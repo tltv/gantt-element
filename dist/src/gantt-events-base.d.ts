@@ -61,6 +61,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private updateMoveElementFor;
     private hideMoveElement;
     private moveCompleted;
+    private findStepByAnotherStepEvent;
     private internalMoveOrResizeCompleted;
     private moveStepPosition;
     getElementHeightWithMargin(div: HTMLElement): number;

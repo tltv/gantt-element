@@ -50,18 +50,23 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     }
     _handleTouchEnd(event) {
         clearTimeout(this.touchStartTimeoutId);
-        if (this.insideTapTimeWindow) {
-            this._handleTap(event);
-        }
-        else {
-            this.handleMouseOrTouchUp(event);
-        }
-        this.insideTapTimeWindow = true;
-        this.touching = false;
-        this.clearEventCapturePoint();
         this.removeEventListener('touchend', this._handleTouchEnd);
         this.removeEventListener('touchmove', this._handleTouchMove);
         this.removeEventListener('touchcancel', this._handleTouchCancel);
+        if (this.insideTapTimeWindow && (!(event.target instanceof GanttStepElement)
+            || this._eventTargetStep === this.findStepByAnotherStepEvent(this._eventTargetStep, event))) {
+            this._handleTap(event);
+        }
+        else {
+            if (this.insideTapTimeWindow && event.target instanceof GanttStepElement) {
+                // this is not done yet at this point because move event handler is not enabled when insideTapTimeWindow=true
+                this.handleMoveOrResize(event);
+            }
+            this.handleMouseOrTouchUp(event);
+        }
+        this.touching = false;
+        this.insideTapTimeWindow = true;
+        this.clearEventCapturePoint();
     }
     _handleTouchMove(event) {
         if (this.handleMoveOrResize(event)) {
@@ -313,8 +318,13 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     moveCompleted(step, y, event) {
         let deltay = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
         console.log("Position delta y: " + deltay + "px" + " capture point y is " + this.capturePoint[1]);
-        let newPosition = this.findStepElement(step, this.capturePointTopPx, (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
+        let newPosition = this.findStepByAnotherStepEvent(step, event);
         this.internalMoveOrResizeCompleted(step, newPosition, true, event);
+    }
+    findStepByAnotherStepEvent(step, event) {
+        let y = GanttUtil.getPageY(event, this._container);
+        let deltay = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
+        return this.findStepElement(step, this.capturePointTopPx, (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
     }
     internalMoveOrResizeCompleted(step, newPosition, move, event) {
         let newStepUid = step.uid;
