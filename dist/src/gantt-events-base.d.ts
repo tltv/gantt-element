@@ -32,6 +32,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     capturePointWidthPercentage: string;
     capturePointLeftPx: number;
     capturePointTopPx: number;
+    capturePointTopRelativeToContentPx: number;
     capturePointWidthPx: number;
     resizingFromLeft: boolean;
     insideTapTimeWindow: boolean;

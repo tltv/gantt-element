@@ -212,7 +212,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             step.style.top = this.calculateNewStepYPosition(step) + "px";
         }
         else {
-            // capturePointTopPx may be wrong sometimes, don't know why.
+            // capturePointTopPx may be wrong sometimes, don't know why. TODO check this.getOffsetTop(step) for substeps.
             step.style.top = this.capturePointTopPx + "px";
         }
     }
@@ -238,7 +238,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         }
         this.capturePointLeftPercentage = step.style.left;
         this.capturePointWidthPercentage = step.style.width;
-        this.capturePointTopPx = this.getOffsetTopContentElement(step);
+        this.capturePointTopPx = this.getOffsetTop(step);
+        this.capturePointTopRelativeToContentPx = this.getOffsetTopContentElement(step);
         this.capturePointLeftPx = step.offsetLeft;
         this.capturePointWidthPx = step.clientWidth;
         this.movePoint = [this.capturePoint[0], this.capturePoint[1]];
@@ -324,7 +325,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     findStepByAnotherStepEvent(step, event) {
         let y = GanttUtil.getPageY(event, this._container);
         let deltay = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
-        return this.findStepElement(step, this.capturePointTopPx, (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
+        return this.findStepElement(step, this.capturePointTopRelativeToContentPx, (this.capturePointTopRelativeToContentPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
     }
     internalMoveOrResizeCompleted(step, newPosition, move, event) {
         let newStepUid = step.uid;

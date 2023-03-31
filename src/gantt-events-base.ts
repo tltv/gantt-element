@@ -39,6 +39,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   capturePointWidthPercentage: string;
   capturePointLeftPx: number;
   capturePointTopPx: number;
+  capturePointTopRelativeToContentPx: number;
   capturePointWidthPx: number;
   resizingFromLeft: boolean;
   insideTapTimeWindow: boolean = true;
@@ -244,7 +245,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     if(!step.substep) {
       step.style.top = this.calculateNewStepYPosition(step) + "px";
     } else {
-      // capturePointTopPx may be wrong sometimes, don't know why.
+      // capturePointTopPx may be wrong sometimes, don't know why. TODO check this.getOffsetTop(step) for substeps.
       step.style.top = this.capturePointTopPx + "px";
     }
   }
@@ -270,7 +271,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
     this.capturePointLeftPercentage = step.style.left;
     this.capturePointWidthPercentage = step.style.width;
-    this.capturePointTopPx = this.getOffsetTopContentElement(step);
+    this.capturePointTopPx = this.getOffsetTop(step);
+    this.capturePointTopRelativeToContentPx = this.getOffsetTopContentElement(step);
     this.capturePointLeftPx = step.offsetLeft;
     this.capturePointWidthPx = step.clientWidth;
 
@@ -367,8 +369,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   private findStepByAnotherStepEvent(step: GanttStepElement, event: Event) :GanttStepElement {
     let y = GanttUtil.getPageY(event, this._container);
     let deltay: number = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
-    return this.findStepElement(step, this.capturePointTopPx,
-      (this.capturePointTopPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop),
+    return this.findStepElement(step, this.capturePointTopRelativeToContentPx,
+      (this.capturePointTopRelativeToContentPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop),
       deltay);
   }
 

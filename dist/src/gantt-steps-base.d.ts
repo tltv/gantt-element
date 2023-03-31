@@ -22,6 +22,7 @@ export declare class GanttStepsBase extends GanttStepsBase_base implements Gantt
     getContentHeight(): number;
     getContent(): HTMLDivElement;
     getOffsetTopContentElement(element: HTMLElement): number;
+    getOffsetTop(element: HTMLElement): number;
     getOffsetLeftContentElement(element: HTMLElement): number;
     handleSlotchange(e: Event): void;
     findStepIndexAt(topY: number): number;

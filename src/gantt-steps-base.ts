@@ -37,6 +37,13 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
     }
 
     getOffsetTopContentElement(element: HTMLElement): number {
+        if(element instanceof GanttSubStepsBase && element.substep) {
+            return this.getOffsetTop(element.owner);
+        }
+        return this.getOffsetTop(element);
+    }
+
+    getOffsetTop(element: HTMLElement): number {
         if ((element instanceof GanttSubStepsBase && element.substep) || element.offsetParent === this._content) {
             return element.offsetTop;
         } else if (element.offsetParent === this) {
@@ -69,8 +76,8 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
         let step: GanttStepElement;
         for (let index = 0; index < this._steps.length; index++) {
             step = this._steps[index];
-            if (this.isBetween(topY, this.getOffsetTopContentElement(step),
-                (this.getOffsetTopContentElement(step) + step.offsetHeight))) {
+            if (this.isBetween(topY, this.getOffsetTop(step),
+                (this.getOffsetTop(step) + step.offsetHeight))) {
                 return index;
             }
         };
@@ -110,8 +117,8 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
             i++;
             for (; i < this._steps.length; i++) {
                 stepCandidate = this._steps[i];
-                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCandidate),
-                    (this.getOffsetTopContentElement(stepCandidate) + stepCandidate.offsetHeight))) {
+                if (this.isBetween(newY, this.getOffsetTop(stepCandidate),
+                    (this.getOffsetTop(stepCandidate) + stepCandidate.offsetHeight))) {
                     return stepCandidate;
                 }
             }
@@ -119,8 +126,8 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
             i--;
             for (; i >= 0; i--) {
                 stepCandidate = this._steps[i];
-                if (this.isBetween(newY, this.getOffsetTopContentElement(stepCandidate),
-                    (this.getOffsetTopContentElement(stepCandidate) + stepCandidate.offsetHeight))) {
+                if (this.isBetween(newY, this.getOffsetTop(stepCandidate),
+                    (this.getOffsetTop(stepCandidate) + stepCandidate.offsetHeight))) {
                     return stepCandidate;
                 }
             }
