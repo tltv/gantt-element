@@ -21,6 +21,7 @@ export declare class GanttStepsBase extends GanttStepsBase_base implements Gantt
     getContentWidth(): number;
     getContentHeight(): number;
     getContent(): HTMLDivElement;
+    /** Returns offset top in pixels relative to content top edge. */
     getOffsetTopContentElement(element: HTMLElement): number;
     getOffsetTop(element: HTMLElement): number;
     getOffsetLeftContentElement(element: HTMLElement): number;

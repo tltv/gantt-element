@@ -182,7 +182,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     // calculate delta x and y by original position and the current one.
     let deltax: number = GanttUtil.getPageX(event, this._container) - this.capturePoint[0];
     let deltay: number = GanttUtil.getPageY(event, this._container) - this.capturePoint[1];
-    console.log("Position delta x: " + deltax + "px");
+    console.log("Position delta x: %dpx,  y: %dpx", deltax, deltay);
 
     if (this._eventTargetStep.resizing) {
       if (this.resizingFromLeft) {
@@ -478,9 +478,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     let stepHeight: number = this.getElementHeightWithMargin(step);
     let offsetY: number = 0; // offset from content top edge
     if (step.substep) {
-      offsetY = parseInt(step.owner.style.top, 10);
+      offsetY = parseInt(step.owner.style.top, 10) || 0;
     }
-    let stepTop: number = parseInt(step.style.top, 10) + offsetY;
+    let stepTop: number = (parseInt(step.style.top, 10) || 0) + offsetY;
     let maxStepEdgeDeltaUp: number = stepTop - this._getRelativeCapturePointY();
     let maxStepEdgeDeltaDown: number = stepHeight + maxStepEdgeDeltaUp;
 

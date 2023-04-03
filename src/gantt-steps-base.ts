@@ -36,6 +36,7 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
         return this._content;
     }
 
+    /** Returns offset top in pixels relative to content top edge. */
     getOffsetTopContentElement(element: HTMLElement): number {
         if(element instanceof GanttSubStepsBase && element.substep) {
             return this.getOffsetTop(element.owner);
