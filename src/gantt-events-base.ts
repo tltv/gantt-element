@@ -254,9 +254,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     // calculate current 'top' value based on other steps.
     var rowIndex = this.getSteps().indexOf(step);
     if(rowIndex > 0) {
-      return parseInt(this.getSteps()[rowIndex-1].style.top, 10) + this.getElementHeightWithMargin(this.getSteps()[rowIndex-1]) + 1;
+      return parseInt(this.getSteps()[rowIndex-1].style.top, 10) + this.getElementHeightWithMargin(this.getSteps()[rowIndex-1]);
     } else if(this.getSteps().length > 1) {
-      return parseInt(this.getSteps()[rowIndex+1].style.top, 10) - this.getElementHeightWithMargin(step) - 1;
+      return parseInt(this.getSteps()[rowIndex+1].style.top, 10) - this.getElementHeightWithMargin(step);
     } else {
       return 0;
     }
