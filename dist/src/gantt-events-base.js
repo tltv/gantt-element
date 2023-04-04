@@ -28,6 +28,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
          * backup are handled with ignoreMouseEvents boolean flag. */
         this.ignoreMouseEventsMaxTime = 1000; // ms
         this.ignoreMouseEvents = false;
+        /** autoScrollStepSize defiens how many pixels to scroll automatically when moving to container edges. */
+        this.autoScrollStepSize = 10;
+        /** autoScrollAreaSize defines size of the area in pixels that enables automatic scrolling. */
+        this.autoScrollAreaSize = 5;
         this.insideTapTimeWindow = true;
     }
     isInsideTouchTimeWindow() {
@@ -228,6 +232,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             if (this.movableStepsBetweenRows) {
                 this.updateStepYPosition(this._eventTargetStep, deltay);
             }
+            this.autoScroll();
         }
         return true;
     }
@@ -248,6 +253,24 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             this.resetStepPosition(this._eventTargetStep);
         }
         this.hideMoveElement();
+    }
+    autoScroll() {
+        if (this._container.scrollTop > 0 && this._getRelativeMovePointY() <= (this._container.scrollTop + this.autoScrollAreaSize)) {
+            this._container.scrollTop = Math.max(0, this._container.scrollTop - this.autoScrollStepSize);
+            return;
+        }
+        if (this._getRelativeMovePointY() >= (this._container.clientHeight + this._container.scrollTop - this.autoScrollAreaSize)) {
+            this._container.scrollTop = Math.min(this._container.scrollHeight - this._container.clientHeight, this._container.scrollTop + this.autoScrollStepSize);
+            return;
+        }
+        if (this._container.scrollLeft > 0 && this._getRelativeMovePointX() <= (this._container.scrollLeft + this.autoScrollAreaSize)) {
+            this._container.scrollLeft = Math.max(0, this._container.scrollLeft - this.autoScrollStepSize);
+            return;
+        }
+        if (this._getRelativeMovePointX() >= (this._container.clientWidth + this._container.scrollLeft - this.autoScrollAreaSize)) {
+            this._container.scrollLeft = Math.min(this._container.scrollWidth - this._container.clientWidth, this._container.scrollLeft + this.autoScrollStepSize);
+            return;
+        }
     }
     deferredResetIgnoreMouseEvents() {
         clearTimeout(this.ignoreMouseEventsId);
@@ -528,6 +551,12 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     }
     _getRelativeCapturePointY() {
         return this.capturePoint[1] - (this._container.offsetTop + this.offsetTop);
+    }
+    _getRelativeMovePointY() {
+        return this.movePoint[1] - (this._container.offsetTop + this.offsetTop);
+    }
+    _getRelativeMovePointX() {
+        return this.movePoint[0] - (this._container.offsetLeft + this.offsetLeft);
     }
 }
 __decorate([

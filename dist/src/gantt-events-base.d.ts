@@ -33,6 +33,10 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     ignoreMouseEventsMaxTime: number;
     ignoreMouseEvents: boolean;
     ignoreMouseEventsId: any;
+    /** autoScrollStepSize defiens how many pixels to scroll automatically when moving to container edges. */
+    autoScrollStepSize: number;
+    /** autoScrollAreaSize defines size of the area in pixels that enables automatic scrolling. */
+    autoScrollAreaSize: number;
     _eventTargetStep: GanttStepElement;
     touchStartTapTimeoutId: any;
     touchStartTimeoutId: any;
@@ -61,6 +65,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private _handleTap;
     private handleMoveOrResize;
     private handleMouseOrTouchUp;
+    private autoScroll;
     private deferredResetIgnoreMouseEvents;
     private endMouseEvent;
     private resetStepPosition;
@@ -85,5 +90,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private updateStepResizingRight;
     private updateStepResizingLeft;
     private _getRelativeCapturePointY;
+    private _getRelativeMovePointY;
+    private _getRelativeMovePointX;
 }
 export {};

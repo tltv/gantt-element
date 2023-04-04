@@ -40,6 +40,11 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   ignoreMouseEvents: boolean = false;
   ignoreMouseEventsId: any;
 
+  /** autoScrollStepSize defiens how many pixels to scroll automatically when moving to container edges. */
+  autoScrollStepSize: number = 10;
+  /** autoScrollAreaSize defines size of the area in pixels that enables automatic scrolling. */
+  autoScrollAreaSize: number = 5;
+
   _eventTargetStep: GanttStepElement;
   touchStartTapTimeoutId: any;
   touchStartTimeoutId: any;
@@ -262,7 +267,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       if (this.movableStepsBetweenRows) {
         this.updateStepYPosition(this._eventTargetStep, deltay);
       }
+
+      this.autoScroll();
     }
+
     return true;
   }
 
@@ -283,6 +291,25 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
 
     this.hideMoveElement();
+  }
+
+  private autoScroll() {
+    if(this._container.scrollTop > 0 && this._getRelativeMovePointY() <= (this._container.scrollTop + this.autoScrollAreaSize)) {
+      this._container.scrollTop = Math.max(0, this._container.scrollTop - this.autoScrollStepSize);
+      return;
+    }
+    if(this._getRelativeMovePointY() >= (this._container.clientHeight + this._container.scrollTop - this.autoScrollAreaSize)) {
+      this._container.scrollTop = Math.min(this._container.scrollHeight - this._container.clientHeight, this._container.scrollTop + this.autoScrollStepSize);
+      return;
+    }
+    if(this._container.scrollLeft > 0 && this._getRelativeMovePointX() <= (this._container.scrollLeft + this.autoScrollAreaSize)) {
+      this._container.scrollLeft = Math.max(0, this._container.scrollLeft - this.autoScrollStepSize);
+      return;
+    }
+    if(this._getRelativeMovePointX() >= (this._container.clientWidth + this._container.scrollLeft - this.autoScrollAreaSize)) {
+      this._container.scrollLeft = Math.min(this._container.scrollWidth - this._container.clientWidth, this._container.scrollLeft + this.autoScrollStepSize);
+      return;
+    }
   }
 
   private deferredResetIgnoreMouseEvents() {
@@ -583,5 +610,13 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
 
   private _getRelativeCapturePointY(): number {
     return this.capturePoint[1] - (this._container.offsetTop + this.offsetTop);
+  }
+
+  private _getRelativeMovePointY(): number {
+    return this.movePoint[1] - (this._container.offsetTop + this.offsetTop);
+  }
+
+  private _getRelativeMovePointX(): number {
+    return this.movePoint[0] - (this._container.offsetLeft + this.offsetLeft);
   }
 }
