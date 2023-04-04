@@ -43,7 +43,14 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
             throw "element.offsetParent should be either content or gantt element";
         }
     }
+    /** Returns offset left in pixels relative to content left edge. */
     getOffsetLeftContentElement(element) {
+        if (element instanceof GanttSubStepsBase && element.substep) {
+            return this.getOffsetLeft(element.owner);
+        }
+        return this.getOffsetLeft(element);
+    }
+    getOffsetLeft(element) {
         if ((element instanceof GanttSubStepsBase && element.substep) || element.offsetParent === this._content) {
             return element.offsetLeft;
         }

@@ -19,12 +19,22 @@ declare const GanttEventsBase_base: typeof GanttStepsBase & {
     prototype: import("./gantt-timeline-mixin").GanttTimelineInterface;
 };
 export declare class GanttEventsBase extends GanttEventsBase_base implements GanttEventsInterface {
-    private static TAP_TIME_WINDOW;
     movableSteps: boolean;
     resizableSteps: boolean;
     movableStepsBetweenRows: boolean;
     touching: boolean;
+    /** Tap time window defines the maximum time in milliseconds to detect a touch as a tap after touchStart event is triggered. */
+    tapTimeWindow: number;
+    /** ignoreTouchTimeWindow defines time window in milliseconds to wait before allowing step move/resize/tap to happen for benefit of scrolling. */
+    ignoreTouchTimeWindow: number;
+    /** ignoreMouseEventsMaxTime defines time in milliseconds to wait after touchEnd and touchCancel to re-enable mouse events.
+     * Touch start does not call preventDefault() to allow native scrolling work smoothly. Mouse events that are initiated by touch events as a
+     * backup are handled with ignoreMouseEvents boolean flag. */
+    ignoreMouseEventsMaxTime: number;
+    ignoreMouseEvents: boolean;
+    ignoreMouseEventsId: any;
     _eventTargetStep: GanttStepElement;
+    touchStartTapTimeoutId: any;
     touchStartTimeoutId: any;
     movePoint: [number, number];
     capturePoint: [number, number];
@@ -36,9 +46,12 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     capturePointWidthPx: number;
     resizingFromLeft: boolean;
     insideTapTimeWindow: boolean;
+    touchStartTime: number;
     moveElement: HTMLDivElement;
+    private isInsideTouchTimeWindow;
     handleTouchStart(event: TouchEvent): void;
     private _handleTouchEnd;
+    private _doHandleTouchEnd;
     private _handleTouchMove;
     private _handleTouchCancel;
     handleMouseDown(event: MouseEvent): void;
@@ -48,6 +61,7 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     private _handleTap;
     private handleMoveOrResize;
     private handleMouseOrTouchUp;
+    private deferredResetIgnoreMouseEvents;
     private endMouseEvent;
     private resetStepPosition;
     private resetBarYPosition;

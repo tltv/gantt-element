@@ -55,7 +55,15 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
         }
     }
 
+    /** Returns offset left in pixels relative to content left edge. */
     getOffsetLeftContentElement(element: HTMLElement): number {
+        if(element instanceof GanttSubStepsBase && element.substep) {
+            return this.getOffsetLeft(element.owner);
+        }
+        return this.getOffsetLeft(element);
+    }
+
+    getOffsetLeft(element: HTMLElement): number {
         if ((element instanceof GanttSubStepsBase && element.substep) || element.offsetParent === this._content) {
             return element.offsetLeft;
         } else if (element.offsetParent === this) {

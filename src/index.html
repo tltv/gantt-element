@@ -57,6 +57,7 @@
         <button onclick="addNewStep()">Add new step</button>
         Width:<input id="ganttwidth" type="text" onchange="onWidthChange()" value="100%"></input>
         Height:<input id="ganttheight" type="text" onchange="onHeightChange()" value="100%"></input>
+        Fast Touch Mode:<input id="ganttfasttouchmode" type="checkbox" onchange="onFastTouchModeChange()" value="false" title="Fast Touch Mode makes touch move events more responsive but in expense of scrolling working anywhere over the content area."></input>
       </div>
       <div class="wrapper-for-gantt">
         <div id="left-wrapper">
@@ -133,10 +134,16 @@
         document.getElementById("left-wrapper").style.height = height;
       }
 
+      function onFastTouchModeChange() {
+        let fastTouchMode = document.getElementById("ganttfasttouchmode").checked;
+        document.getElementById("gantt").ignoreTouchTimeWindow = fastTouchMode ? 0 : 100;
+      }
+
       document.getElementById("gantt").addEventListener('gantt-element-ready', event => {
         document.getElementById("left-content").style.height = "calc(" + document.getElementById("gantt").childElementCount + " * 30px)";
         document.getElementById("gantt").registerScrollElement(document.getElementById("left-scroller")); 
       });
+
     </script>
   </body>
 </html>

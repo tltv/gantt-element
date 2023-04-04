@@ -24,14 +24,24 @@ declare global {
 
 export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implements GanttEventsInterface {
 
-  private static TAP_TIME_WINDOW = 400; // milliseconds
-
   @property({ reflect: true, type: Boolean }) movableSteps: boolean = true;
   @property({ reflect: true, type: Boolean }) resizableSteps: boolean = true;
   @property({ reflect: true, type: Boolean }) movableStepsBetweenRows: boolean = true;
   @property({ reflect: true, type: Boolean }) touching: boolean = false;
 
+  /** Tap time window defines the maximum time in milliseconds to detect a touch as a tap after touchStart event is triggered. */
+  tapTimeWindow: number = 400; // ms
+  /** ignoreTouchTimeWindow defines time window in milliseconds to wait before allowing step move/resize/tap to happen for benefit of scrolling. */
+  ignoreTouchTimeWindow: number = 200; // ms
+  /** ignoreMouseEventsMaxTime defines time in milliseconds to wait after touchEnd and touchCancel to re-enable mouse events. 
+   * Touch start does not call preventDefault() to allow native scrolling work smoothly. Mouse events that are initiated by touch events as a 
+   * backup are handled with ignoreMouseEvents boolean flag. */
+  ignoreMouseEventsMaxTime: number = 1000; // ms
+  ignoreMouseEvents: boolean = false;
+  ignoreMouseEventsId: any;
+
   _eventTargetStep: GanttStepElement;
+  touchStartTapTimeoutId: any;
   touchStartTimeoutId: any;
   movePoint: [number, number];
   capturePoint: [number, number];
@@ -43,58 +53,98 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   capturePointWidthPx: number;
   resizingFromLeft: boolean;
   insideTapTimeWindow: boolean = true;
+  touchStartTime: number;
 
   // additional element that appears when moving or resizing
   @query('#mv-el')
   moveElement: HTMLDivElement;
 
+  private isInsideTouchTimeWindow(): boolean {
+    return this.ignoreTouchTimeWindow > 0 && (Date.now() - this.touchStartTime) <= this.ignoreTouchTimeWindow;
+  }
+
   // touchstart is fired before mousedown
   public handleTouchStart(event: TouchEvent) {
     if (event.touches.length != 1) { return; }
-
+    if(this.touchStartTime === Date.now()) {
+      return;
+    }
+    clearTimeout(this.ignoreMouseEventsId);
+    this.ignoreMouseEvents = true;
+    this.touchStartTime = Date.now();
     this.insideTapTimeWindow = true;
     if (event.target instanceof GanttStepElement) {
       this.setEventCapturePoint(event, <GanttStepElement>event.target);
       this.addEventListener('touchend', this._handleTouchEnd);
+      let self = this;
       this.touchStartTimeoutId = setTimeout(() => {
         this.touching = true;
-        this.insideTapTimeWindow = false;
-        this.addEventListener('touchmove', this._handleTouchMove);
-        this.addEventListener('touchcancel', this._handleTouchCancel);
-      }, GanttEventsBase.TAP_TIME_WINDOW);
-      event.preventDefault();
+        self.addEventListener('touchmove', self._handleTouchMove);
+        self.addEventListener('touchcancel', self._handleTouchCancel);
+        self.updateMoveElementFor(self._eventTargetStep);
+      }, this.ignoreTouchTimeWindow);
+      this.touchStartTapTimeoutId = setTimeout(() => {
+        self.insideTapTimeWindow = false;
+      }, this.tapTimeWindow);
+
     } else if(event.target === this) {
+      this.touching = true;
       this.setEventCapturePoint(event, null);
       this.addEventListener('touchend', this._handleTouchEnd);
-      this.touchStartTimeoutId = setTimeout(() => {
-        this.insideTapTimeWindow = false;
-      }, GanttEventsBase.TAP_TIME_WINDOW);
+      let self = this;
+      this.touchStartTapTimeoutId = setTimeout(() => {
+        self.insideTapTimeWindow = false;
+      }, this.tapTimeWindow);
       this.addEventListener('touchmove', this._handleTouchMove);
       this.addEventListener('touchcancel', this._handleTouchCancel);
     }
   }
 
   private _handleTouchEnd(event: TouchEvent) {
+    if(!this.touching || this.isInsideTouchTimeWindow()) {
+      this._doHandleTouchEnd(() => {});
+    } else {
+      let self = this;
+      this._doHandleTouchEnd(() => {
+        if (self.insideTapTimeWindow && (!(event.target instanceof GanttStepElement)
+          || self._eventTargetStep === self.findStepByAnotherStepEvent(self._eventTargetStep, event))) {
+            self._handleTap(event);
+        } else if(!this.isInsideTouchTimeWindow()) {
+          if(self.insideTapTimeWindow && event.target instanceof GanttStepElement) {
+            // this is not done yet at this point because move event handler is not enabled when insideTapTimeWindow=true
+            self.handleMoveOrResize(event);
+          }
+          self.handleMouseOrTouchUp(event);
+        }
+      });
+    }
+  }
+
+  private _doHandleTouchEnd(operation: Function) {
     clearTimeout(this.touchStartTimeoutId);
+    clearTimeout(this.touchStartTapTimeoutId);
+
     this.removeEventListener('touchend', this._handleTouchEnd);
     this.removeEventListener('touchmove', this._handleTouchMove);
     this.removeEventListener('touchcancel', this._handleTouchCancel);
-    if (this.insideTapTimeWindow && (!(event.target instanceof GanttStepElement)
-      || this._eventTargetStep === this.findStepByAnotherStepEvent(this._eventTargetStep, event))) {
-      this._handleTap(event);
-    } else {
-      if(this.insideTapTimeWindow && event.target instanceof GanttStepElement) {
-        // this is not done yet at this point because move event handler is not enabled when insideTapTimeWindow=true
-        this.handleMoveOrResize(event);
-      }
-      this.handleMouseOrTouchUp(event);
+    try {
+      operation();
+    } finally {
+      this.touching = false;
+      this.insideTapTimeWindow = true;
+      this.deferredResetIgnoreMouseEvents();
+      this.clearEventCapturePoint();
+      this.hideMoveElement();
     }
-    this.touching = false;
-    this.insideTapTimeWindow = true;
-    this.clearEventCapturePoint();
   }
 
   private _handleTouchMove(event: TouchEvent) {
+    if(this.isInsideTouchTimeWindow()) {
+      this.touchStartTime = Date.now();
+      this._doHandleTouchEnd(() => {});
+      event.preventDefault();
+      return;
+    }
     if(this.handleMoveOrResize(event)) {
       // Prevent the browser from processing emulated mouse events.
       event.preventDefault();
@@ -103,12 +153,18 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
 
   private _handleTouchCancel(event: TouchEvent) {
     clearTimeout(this.touchStartTimeoutId);
+    clearTimeout(this.touchStartTapTimeoutId);
     this.touching = false;
+    this.deferredResetIgnoreMouseEvents();
     this.clearEventCapturePoint();
     this.hideMoveElement();
+    
   }
 
   public handleMouseDown(event: MouseEvent) {
+    if(this.ignoreMouseEvents) {
+       return;
+    }
     if (event.target instanceof GanttStepElement) {
       this.setEventCapturePoint(event, <GanttStepElement>event.target);
       this.addEventListener('mouseup', this._handleMouseUp);
@@ -124,6 +180,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   public _handleMouseUp(event: MouseEvent) {
+    if(this.ignoreMouseEvents) {
+      return;
+    }
     if(!this.movePoint) {
       this.movePoint = GanttUtil.getPointForEvent(event, this._container);
     }
@@ -148,6 +207,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   private _handleMouseMove(event: MouseEvent) {
+    if(this.ignoreMouseEvents) {
+      return;
+    }
     this.handleMoveOrResize(event);
   }
 
@@ -221,6 +283,12 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
 
     this.hideMoveElement();
+  }
+
+  private deferredResetIgnoreMouseEvents() {
+    clearTimeout(this.ignoreMouseEventsId);
+    let self = this;
+    this.ignoreMouseEventsId = setTimeout(() => self.ignoreMouseEvents = false, this.ignoreMouseEventsMaxTime);
   }
 
   private endMouseEvent() {
@@ -326,8 +394,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   }
 
   private updateMoveElementFor(step: GanttStepElement) {
-    if (step == null) {
+    if (!step) {
       this.hideMoveElement();
+      return;
     }
     this.moveElement.style.removeProperty('display');
 

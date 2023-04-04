@@ -24,7 +24,9 @@ export declare class GanttStepsBase extends GanttStepsBase_base implements Gantt
     /** Returns offset top in pixels relative to content top edge. */
     getOffsetTopContentElement(element: HTMLElement): number;
     getOffsetTop(element: HTMLElement): number;
+    /** Returns offset left in pixels relative to content left edge. */
     getOffsetLeftContentElement(element: HTMLElement): number;
+    getOffsetLeft(element: HTMLElement): number;
     handleSlotchange(e: Event): void;
     findStepIndexAt(topY: number): number;
     /**
