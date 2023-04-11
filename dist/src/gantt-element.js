@@ -59,6 +59,7 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
 
       #content {
         position: relative;
+        overflow: hidden;
       }
 
       #mv-el {

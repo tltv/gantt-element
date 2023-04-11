@@ -99,6 +99,7 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
 
       #content {
         position: relative;
+        overflow: hidden;
       }
 
       #mv-el {
