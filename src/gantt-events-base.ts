@@ -480,15 +480,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     let endDate: Date = step.end;
     if((move && this.movableSteps) || (!move && this.resizableSteps)) {
       // calculate new start/end dates for moved/resized step
-      let ownerStartDate: Date;
-      let ownerEndDate: Date;
       let left: number = parseInt(step.style.left, 10);
       if (step.substep) {
-        let ownerLeft: number = step.owner.offsetLeft;
-        left += ownerLeft;
-        ownerStartDate = this._timeline.getDateForLeftPosition(ownerLeft);
-        ownerLeft += ElementUtil.getWidth(step.owner);
-        ownerEndDate = this._timeline.getDateForLeftPosition(ownerLeft);
+        left += step.owner.offsetLeft;
       }
       startDate = this._timeline.getDateForLeftPosition(left);
       left += ElementUtil.getWidth(step);

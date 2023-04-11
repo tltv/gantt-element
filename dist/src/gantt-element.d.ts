@@ -40,6 +40,11 @@ export declare class GanttElement extends GanttElement_base {
     * horizontal scroll bar is visible.
     */
     isContentOverflowingHorizontally(): boolean;
+    /**
+    * Return true, if content is overflowing vertically.This means also that
+    * vertical scroll bar is visible.
+    */
+    isContentOverflowingVertically(): boolean;
     private _handleGanttTouchStart;
     private _handleGanttMouseDown;
 }

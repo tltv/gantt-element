@@ -294,6 +294,16 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         }
         return this._timeline.isTimelineOverflowingHorizontally();
     }
+    /**
+    * Return true, if content is overflowing vertically.This means also that
+    * vertical scroll bar is visible.
+    */
+    isContentOverflowingVertically() {
+        if (!this._content || !this._container) {
+            return false;
+        }
+        return this._container.scrollHeight > this._container.clientHeight;
+    }
     _handleGanttTouchStart(event) {
         this.handleTouchStart(event);
     }

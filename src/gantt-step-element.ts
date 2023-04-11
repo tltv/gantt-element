@@ -182,7 +182,13 @@ export class GanttStepElement extends GanttSubStepsBase {
                         this.updateWidth();
                     });
                 } else {
-                    this.stepWidth = timeline.getWidthPercentageStringForDateInterval(this.end.getTime() - this.start.getTime());
+                    if(gantt.isContentOverflowingVertically()) {
+                        let rangeEnd = timeline.getDateForLeftPosition(gantt.getContentWidth());
+                        this.stepWidth = timeline.getWidthPercentageStringForDateIntervalForRange(this.end.getTime() - this.start.getTime(),
+                            rangeEnd.getTime() - timeline.internalInclusiveStartDateTime.getTime());
+                    } else {
+                        this.stepWidth = timeline.getWidthPercentageStringForDateInterval(this.end.getTime() - this.start.getTime());
+                    }
                     this._substeps.forEach(substep => substep.refresh());
                     this.updateWidth();
                 }
