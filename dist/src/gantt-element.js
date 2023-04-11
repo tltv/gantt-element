@@ -118,7 +118,7 @@ let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBas
         this.initGrid(this._container, this._content);
         super.firstUpdated(changedProperties);
         this._resizeObserver.observe(this);
-        this.addEventListener('touchstart', this._handleGanttTouchStart);
+        this.addEventListener('touchstart', this._handleGanttTouchStart, { passive: true });
         this.addEventListener('mousedown', this._handleGanttMouseDown);
         this.dispatchEvent(new Event('gantt-element-ready'));
     }
