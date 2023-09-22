@@ -223,8 +223,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.dispatchEvent(new CustomEvent("ganttStepClick", {
         detail: {
           uid: event.target.uid,
-          start: format(event.target.start, "yyyy-MM-dd'T'HH:mm:ss"),
-          end: format(event.target.end, "yyyy-MM-dd'T'HH:mm:ss"),
+          start: formatInTimeZone(event.target.start, this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
+          end: formatInTimeZone(event.target.end, this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
           step: event.target,
           event: event
         }
@@ -505,8 +505,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
         detail: {
           uid: step.uid,
           newUid: newStepUid,
-          start: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
-          end: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
+          start: formatInTimeZone(startDate, this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
+          end: formatInTimeZone(endDate, this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
           step: step,
           event: event
         }
@@ -515,8 +515,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.dispatchEvent(new CustomEvent("ganttStepResize", {
         detail: {
           uid: step.uid,
-          start: format(startDate, "yyyy-MM-dd'T'HH:mm:ss"),
-          end: format(endDate, "yyyy-MM-dd'T'HH:mm:ss"),
+          start: formatInTimeZone(startDate, this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
+          end: formatInTimeZone(endDate, this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
           step: step,
           event: event
         }
