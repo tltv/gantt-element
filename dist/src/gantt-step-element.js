@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { html, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { GanttSubStepsBase } from './gantt-substeps-base';
-let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
+export let GanttStepElement = class GanttStepElement extends GanttSubStepsBase {
     static get styles() {
         return css `
         :host {
@@ -229,5 +229,4 @@ GanttStepElement.RESIZE_WIDTH = 10;
 GanttStepElement = __decorate([
     customElement('gantt-step-element')
 ], GanttStepElement);
-export { GanttStepElement };
 //# sourceMappingURL=gantt-step-element.js.map

@@ -11,6 +11,7 @@ export interface GanttTimelineInterface {
     _timeline: TimelineElement;
     
     getTimeline(): Promise<TimelineElement>;
+    getTimeZone(): string;
 }
 
 export const GanttTimelineMixin = <T extends Constructor<LitElement>>(
@@ -29,6 +30,9 @@ export const GanttTimelineMixin = <T extends Constructor<LitElement>>(
             return this._timeline;
         }
 
+        public getTimeZone(): string {
+            return this._timeline.getAttribute("timezone");
+        }
     }
     return GanttTimelineMixin;
 };

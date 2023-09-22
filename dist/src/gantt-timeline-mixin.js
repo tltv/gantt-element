@@ -14,6 +14,9 @@ export const GanttTimelineMixin = (base) => {
             await new Promise((resolve) => requestAnimationFrame(() => continueWhenTimelineReady(resolve, () => this._timeline, continueWhenTimelineReady)));
             return this._timeline;
         }
+        getTimeZone() {
+            return this._timeline.getAttribute("timezone");
+        }
     }
     __decorate([
         query('#timeline')

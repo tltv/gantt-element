@@ -7,6 +7,7 @@ type Constructor<T = object> = {
 export interface GanttTimelineInterface {
     _timeline: TimelineElement;
     getTimeline(): Promise<TimelineElement>;
+    getTimeZone(): string;
 }
 export declare const GanttTimelineMixin: <T extends Constructor<LitElement>>(base: T) => T & Constructor<GanttTimelineInterface>;
 export {};

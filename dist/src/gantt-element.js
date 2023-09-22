@@ -10,7 +10,7 @@ import { Resolution } from 'tltv-timeline-element/dist/src/model/Resolution.js';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttEventsBase } from './gantt-events-base';
 import { BackgroundGridMixin } from './css-background-grid-mixin';
-let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
+export let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     static get styles() {
         return css `
       :host {
@@ -362,5 +362,4 @@ __decorate([
 GanttElement = __decorate([
     customElement('gantt-element')
 ], GanttElement);
-export { GanttElement };
 //# sourceMappingURL=gantt-element.js.map

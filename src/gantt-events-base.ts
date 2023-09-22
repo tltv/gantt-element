@@ -6,7 +6,7 @@ import { GanttStepElement } from './gantt-step-element';
 import * as GanttUtil from './util/ganttUtil';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepsBase } from './gantt-steps-base';
-import { format } from 'date-fns-tz';
+import { format, formatInTimeZone } from 'date-fns-tz';
 
 export interface GanttEventsInterface {
   movableSteps: boolean;
@@ -233,7 +233,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
       this.dispatchEvent(new CustomEvent("ganttBackgroundClick", {
         detail: {
           index: this.findStepIndexAt(GanttUtil.getPageY(event, this._container) - (this._container.offsetTop + this.offsetTop)),
-          date: format(this._timeline.getDateForLeftPosition(GanttUtil.getPageX(event, this._container) - (this._container.offsetLeft + this.offsetLeft)), "yyyy-MM-dd'T'HH:mm:ss"),
+          date: formatInTimeZone(this._timeline.getDateForLeftPosition(GanttUtil.getPageX(event, this._container) - (this._container.offsetLeft + this.offsetLeft)), this.getTimeZone(), "yyyy-MM-dd'T'HH:mm:ss"),
           event: event
         }
       }));
