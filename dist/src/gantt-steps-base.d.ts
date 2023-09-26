@@ -48,5 +48,6 @@ export declare class GanttStepsBase extends GanttStepsBase_base implements Gantt
     findStepElement(startFromStep: GanttStepElement, startTopY: number, startBottomY: number, newY: number, deltay: number): GanttStepElement;
     private isBetween;
     getSteps(): Array<GanttStepElement>;
+    private initStepsYPosition;
 }
 export {};

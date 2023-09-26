@@ -7,6 +7,7 @@ import * as GanttUtil from './util/ganttUtil';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepsBase } from './gantt-steps-base';
 import { format, formatInTimeZone } from 'date-fns-tz';
+import { getElementHeightWithMargin } from './util/ganttUtil';
 
 export interface GanttEventsInterface {
   movableSteps: boolean;
@@ -249,7 +250,6 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     // calculate delta x and y by original position and the current one.
     let deltax: number = GanttUtil.getPageX(event, this._container) - this.capturePoint[0];
     let deltay: number = GanttUtil.getPageY(event, this._container) - this.capturePoint[1];
-    console.log("Position delta x: %dpx,  y: %dpx", deltax, deltay);
 
     if (this._eventTargetStep.resizing) {
       if (this.resizingFromLeft) {
@@ -349,9 +349,9 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     // calculate current 'top' value based on other steps.
     var rowIndex = this.getSteps().indexOf(step);
     if(rowIndex > 0) {
-      return parseInt(this.getSteps()[rowIndex-1].style.top, 10) + this.getElementHeightWithMargin(this.getSteps()[rowIndex-1]);
+      return parseInt(this.getSteps()[rowIndex-1].style.top, 10) + getElementHeightWithMargin(this.getSteps()[rowIndex-1]);
     } else if(this.getSteps().length > 1) {
-      return parseInt(this.getSteps()[rowIndex+1].style.top, 10) - this.getElementHeightWithMargin(step);
+      return parseInt(this.getSteps()[rowIndex+1].style.top, 10) - getElementHeightWithMargin(step);
     } else {
       return 0;
     }
@@ -456,7 +456,6 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   */
   private moveCompleted(step: GanttStepElement, y: number, event: Event) {
     let deltay: number = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
-    console.log("Position delta y: " + deltay + "px" + " capture point y is " + this.capturePoint[1]);
 
     let newPosition: GanttStepElement = this.findStepByAnotherStepEvent(step, event);
     this.internalMoveOrResizeCompleted(step, newPosition, true, event);
@@ -466,7 +465,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     let y = GanttUtil.getPageY(event, this._container);
     let deltay: number = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
     return this.findStepElement(step, this.capturePointTopRelativeToContentPx,
-      (this.capturePointTopRelativeToContentPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop),
+      (this.capturePointTopRelativeToContentPx + getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop),
       deltay);
   }
 
@@ -545,27 +544,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
   }
 
-  public getElementHeightWithMargin(div: HTMLElement): number {
-    let height: number = Math.round(ElementUtil.getHeight(div));
-    let marginHeight: number = 0;
-    marginHeight = this.getMarginByComputedStyle(div);
-    return height + Math.round(marginHeight);
-  }
-
-  private getMarginByComputedStyle(elem: HTMLElement): number {
-    let cs = elem.ownerDocument.defaultView.getComputedStyle(elem);
-    let size: number;
-    if (cs) {
-      size = parseInt(cs.getPropertyValue('margin-top'))
-        + parseInt(cs.getPropertyValue('margin-bottom'));
-    } else {
-      size = 0;
-    }
-    return size;
-  }
-
   private updateStepYPosition(step: GanttStepElement, deltay: number) {
-    let stepHeight: number = this.getElementHeightWithMargin(step);
+    let stepHeight: number = getElementHeightWithMargin(step);
     let offsetY: number = 0; // offset from content top edge
     if (step.substep) {
       offsetY = parseInt(step.owner.style.top, 10) || 0;

@@ -12,6 +12,7 @@ import * as GanttUtil from './util/ganttUtil';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttStepsBase } from './gantt-steps-base';
 import { formatInTimeZone } from 'date-fns-tz';
+import { getElementHeightWithMargin } from './util/ganttUtil';
 export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     constructor() {
         super(...arguments);
@@ -214,7 +215,6 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         // calculate delta x and y by original position and the current one.
         let deltax = GanttUtil.getPageX(event, this._container) - this.capturePoint[0];
         let deltay = GanttUtil.getPageY(event, this._container) - this.capturePoint[1];
-        console.log("Position delta x: %dpx,  y: %dpx", deltax, deltay);
         if (this._eventTargetStep.resizing) {
             if (this.resizingFromLeft) {
                 this.updateStepResizingLeft(this._eventTargetStep, deltax);
@@ -306,10 +306,10 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         // calculate current 'top' value based on other steps.
         var rowIndex = this.getSteps().indexOf(step);
         if (rowIndex > 0) {
-            return parseInt(this.getSteps()[rowIndex - 1].style.top, 10) + this.getElementHeightWithMargin(this.getSteps()[rowIndex - 1]);
+            return parseInt(this.getSteps()[rowIndex - 1].style.top, 10) + getElementHeightWithMargin(this.getSteps()[rowIndex - 1]);
         }
         else if (this.getSteps().length > 1) {
-            return parseInt(this.getSteps()[rowIndex + 1].style.top, 10) - this.getElementHeightWithMargin(step);
+            return parseInt(this.getSteps()[rowIndex + 1].style.top, 10) - getElementHeightWithMargin(step);
         }
         else {
             return 0;
@@ -405,14 +405,13 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
     */
     moveCompleted(step, y, event) {
         let deltay = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
-        console.log("Position delta y: " + deltay + "px" + " capture point y is " + this.capturePoint[1]);
         let newPosition = this.findStepByAnotherStepEvent(step, event);
         this.internalMoveOrResizeCompleted(step, newPosition, true, event);
     }
     findStepByAnotherStepEvent(step, event) {
         let y = GanttUtil.getPageY(event, this._container);
         let deltay = this.movableStepsBetweenRows ? y - this.capturePoint[1] : 0;
-        return this.findStepElement(step, this.capturePointTopRelativeToContentPx, (this.capturePointTopRelativeToContentPx + this.getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
+        return this.findStepElement(step, this.capturePointTopRelativeToContentPx, (this.capturePointTopRelativeToContentPx + getElementHeightWithMargin(step)), y - (this._container.offsetTop + this.offsetTop), deltay);
     }
     internalMoveOrResizeCompleted(step, newPosition, move, event) {
         let newStepUid = step.uid;
@@ -490,26 +489,8 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             this.insertBefore(step, insertBeforeStep);
         }
     }
-    getElementHeightWithMargin(div) {
-        let height = Math.round(ElementUtil.getHeight(div));
-        let marginHeight = 0;
-        marginHeight = this.getMarginByComputedStyle(div);
-        return height + Math.round(marginHeight);
-    }
-    getMarginByComputedStyle(elem) {
-        let cs = elem.ownerDocument.defaultView.getComputedStyle(elem);
-        let size;
-        if (cs) {
-            size = parseInt(cs.getPropertyValue('margin-top'))
-                + parseInt(cs.getPropertyValue('margin-bottom'));
-        }
-        else {
-            size = 0;
-        }
-        return size;
-    }
     updateStepYPosition(step, deltay) {
-        let stepHeight = this.getElementHeightWithMargin(step);
+        let stepHeight = getElementHeightWithMargin(step);
         let offsetY = 0; // offset from content top edge
         if (step.substep) {
             offsetY = parseInt(step.owner.style.top, 10) || 0;

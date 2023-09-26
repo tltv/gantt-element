@@ -10,6 +10,7 @@ import { GanttSubStepsBase } from './gantt-substeps-base';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import 'tltv-timeline-element/dist/src/timeline-element.js';
 import { GanttScrollerMixin } from './gantt-scroller-mixin';
+import { getElementHeightWithMargin } from "./util/ganttUtil";
 export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
     constructor() {
         super(...arguments);
@@ -66,6 +67,7 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
         let slot = e.target;
         this._steps = slot.assignedElements({ flatten: true }).map(element => element);
         this._steps.forEach((step, index) => step.position = index);
+        this.initStepsYPosition();
         console.log(`GanttElement.handleSlotchange ended with ${this._steps.length} step(s)`);
     }
     findStepIndexAt(topY) {
@@ -132,6 +134,15 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) {
     }
     getSteps() {
         return this._steps;
+    }
+    initStepsYPosition() {
+        let currentTopPosition = 0;
+        this._steps.forEach((step) => {
+            if (!step.substep) {
+                step.style.top = currentTopPosition + "px";
+                currentTopPosition += getElementHeightWithMargin(step);
+            }
+        });
     }
 }
 __decorate([

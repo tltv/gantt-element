@@ -10,6 +10,7 @@ import { Resolution } from 'tltv-timeline-element/dist/src/model/Resolution.js';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import { GanttEventsBase } from './gantt-events-base';
 import { BackgroundGridMixin } from './css-background-grid-mixin';
+import { getElementHeightWithMargin } from "./util/ganttUtil";
 export let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
     static get styles() {
         return css `
@@ -164,7 +165,7 @@ export let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEv
         }
     }
     updateContentHeight() {
-        let heightOfSteps = this._steps.map(step => step.getStepHeight()).reduce((a, b) => a + b);
+        let heightOfSteps = this._steps.map(step => getElementHeightWithMargin(step)).reduce((a, b) => a + b);
         console.log(`GanttElement.updateContentHeight calculated ${heightOfSteps}px height for content by steps`);
         this.getContent().style.height = heightOfSteps + 'px';
     }
@@ -275,7 +276,7 @@ export let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEv
         let firstStepIndex = 0;
         if (firstStepIndex < this.getSteps().length) {
             let firstStep = this.getSteps()[firstStepIndex];
-            gridBlockHeightPx = this.getElementHeightWithMargin(firstStep);
+            gridBlockHeightPx = getElementHeightWithMargin(firstStep);
             if ((this.getContentHeight() % gridBlockHeightPx) != 0) {
                 // height is not divided evenly for each bar.
                 // Can't use background grid with background-size trick.
