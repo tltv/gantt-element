@@ -155,12 +155,16 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
     }
 
     private initStepsYPosition() {
-        let currentTopPosition: number = 0;
-        this._steps.forEach((step) => {
-            if (!step.substep) {
-                step.style.top = currentTopPosition + "px";
-                currentTopPosition += getElementHeightWithMargin(step);
-            }
-        });
+        // set top positions for steps
+        // do it in next event loop to make sure all steps are rendered at right positions, taking into account margins
+        setTimeout(() => {
+            let currentTopPosition: number = 0;
+            this._steps.forEach((step) => {
+                if (!step.substep) {
+                    step.style.top = currentTopPosition + "px";
+                    currentTopPosition += getElementHeightWithMargin(step);
+                }
+            });
+        }, 0);
     }
 }
