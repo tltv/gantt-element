@@ -139,7 +139,10 @@ export let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEv
     }
     handleSlotchange(e) {
         super.handleSlotchange(e);
-        this.updateContentHeight();
+        // to make sure that all steps are rendered before we calculate the height
+        setTimeout(() => {
+            this.updateContentHeight();
+        });
     }
     updateSize() {
         let self = this;

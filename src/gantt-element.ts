@@ -174,7 +174,11 @@ export class GanttElement extends BackgroundGridMixin(GanttEventsBase) {
 
   handleSlotchange(e: Event) {
     super.handleSlotchange(e);
-    this.updateContentHeight();
+
+    // to make sure that all steps are rendered before we calculate the height - in case that steps have margins around them
+    setTimeout(() => {
+      this.updateContentHeight();
+    });
   }
 
   public updateSize() {
