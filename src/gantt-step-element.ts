@@ -109,7 +109,7 @@ export class GanttStepElement extends GanttSubStepsBase {
         this.style.setProperty('--gantt-step-height', this.stepHeight);
 
         return html`
-        <div class="step-label">${this.caption}</div>
+        <div class="step-label" part="step-label">${this.caption}</div>
         <slot @slotchange=${this.handleSlotchange}></slot>
         `;
     }
@@ -120,11 +120,6 @@ export class GanttStepElement extends GanttSubStepsBase {
             this.recalculateWidth();
         }
         if (changedProperties.has('position')) {
-            if (this.substep) {
-                this.style.removeProperty("top");
-            } else {
-                this.style.top = this.position * this.getStepHeight() + "px";
-            }
             this.initUidByPosition();
         }
         super.update(changedProperties);

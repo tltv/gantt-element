@@ -6,6 +6,7 @@ import { GanttSubStepsBase } from './gantt-substeps-base';
 import * as ElementUtil from 'tltv-timeline-element/dist/src/util/elementUtil.js';
 import 'tltv-timeline-element/dist/src/timeline-element.js';
 import { GanttScrollerMixin } from './gantt-scroller-mixin';
+import {getElementHeightWithMargin} from "./util/ganttUtil";
 
 export interface GanttStepsInterface {
     _steps: Array<GanttStepElement>;
@@ -78,6 +79,7 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
         let slot: HTMLSlotElement = <HTMLSlotElement>e.target;
         this._steps = slot.assignedElements({ flatten: true }).map(element => <GanttStepElement>element);
         this._steps.forEach((step, index) => step.position = index);
+        this.initStepsYPosition();
         console.log(`GanttElement.handleSlotchange ended with ${this._steps.length} step(s)`);
     }
 
@@ -150,5 +152,19 @@ export class GanttStepsBase extends GanttScrollerMixin(LitElement) implements Ga
 
     public getSteps(): Array<GanttStepElement> {
         return this._steps;
+    }
+
+    private initStepsYPosition() {
+        // set top positions for steps
+        // do it in next event loop to make sure all steps are rendered at right positions, taking into account margins
+        setTimeout(() => {
+            let currentTopPosition: number = 0;
+            this._steps.forEach((step) => {
+                if (!step.substep) {
+                    step.style.top = currentTopPosition + "px";
+                    currentTopPosition += getElementHeightWithMargin(step);
+                }
+            });
+        }, 0);
     }
 }
