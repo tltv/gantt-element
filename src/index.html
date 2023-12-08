@@ -49,6 +49,18 @@
         --gantt-element-width: 100%;
         --gantt-element-height: 100%;
       }
+
+      #progress-element {
+        width: 63%;
+        height: 20%;
+        display: inline-block;
+        bottom: 0;
+        background: rgb(5, 112, 10);
+        position: absolute;
+        z-index: -1;
+        border-radius: 5px;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
@@ -67,8 +79,12 @@
           </div>
         </div>
         <gantt-element id="gantt" resolution="Day" start="2020-04-01" end="2020-06-05">
-          <gantt-step-element caption="Step A" start="2020-04-07T00:00:00" end="2020-04-11T00:00:00"></gantt-step-element>
-          <gantt-step-element caption="Step B" start="2020-04-11T00:00:00" end="2020-04-30T23:59:59" backgroundColor="lightgreen"></gantt-step-element>
+          <gantt-step-element caption="Step A" start="2020-04-07T00:00:00" end="2020-04-11T00:00:00">
+            <span id="progress-element"></span>
+          </gantt-step-element>
+          <gantt-step-element caption="Step B" start="2020-04-11T00:00:00" end="2020-04-30T23:59:59" backgroundColor="lightgreen">
+            <span id="progress-element"></span>
+          </gantt-step-element>
           <gantt-step-element caption="Step C" start="2020-05-01T00:00:00" end="2020-05-09T23:59:59" backgroundColor="lightblue"></gantt-step-element>
           <gantt-step-element caption="Step with sub-steps" start="2020-04-07T00:00:00" end="2020-05-09T23:59:59" backgroundColor="lightyellow">
             <gantt-step-element caption="Sub-step 1" start="2020-04-07T00:00:00" end="2020-04-18T23:59:59"></gantt-step-element>

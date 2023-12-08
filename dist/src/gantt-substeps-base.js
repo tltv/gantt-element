@@ -21,7 +21,9 @@ export class GanttSubStepsBase extends GanttStepBase {
     handleSlotchange(e) {
         // handleSlotchange is called before substep's firstUpdated
         let slot = e.target;
-        this._substeps = slot.assignedElements({ flatten: true }).map(element => element);
+        this._substeps = slot.assignedElements({ flatten: true })
+            .filter(element => element instanceof GanttStepElement)
+            .map(element => element);
         this._substeps.forEach((substep, index) => {
             substep._setupForSubStep();
             substep.position = index;
