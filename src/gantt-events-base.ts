@@ -15,6 +15,8 @@ export interface GanttEventsInterface {
   movableStepsBetweenRows: boolean;
   touching: boolean;
   moveElement: HTMLDivElement;
+  pendingMoveEvents: Array<CustomEvent>;
+  firePendingMoveEvents(): void;
   handleTouchStart(event: TouchEvent): void;
   handleMouseDown(event: MouseEvent): void;
 }
@@ -60,6 +62,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
   resizingFromLeft: boolean;
   insideTapTimeWindow: boolean = true;
   touchStartTime: number;
+  pendingMoveEvents: Array<CustomEvent> = [];
 
   // additional element that appears when moving or resizing
   @query('#mv-el')
@@ -67,6 +70,17 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
 
   private isInsideTouchTimeWindow(): boolean {
     return this.ignoreTouchTimeWindow > 0 && (Date.now() - this.touchStartTime) <= this.ignoreTouchTimeWindow;
+  }
+
+  public firePendingMoveEvents() {
+    let events: Array<CustomEvent> = [];
+    events.push(...this.pendingMoveEvents);
+    events.forEach(event => {
+      this.pendingMoveEvents.splice(this.pendingMoveEvents.indexOf(event), 1);
+    });
+    events.forEach(event => {
+      this.dispatchEvent(event);
+    });
   }
 
   // touchstart is fired before mousedown
@@ -491,16 +505,18 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     }
 
     if (move) {
+      let movingBetweenRows: boolean = false;
       if (this.movableStepsBetweenRows) {
         if(step.substep) {
           this.resetBarYPosition(step);
         } else if (step.uid !== newStepUid) {
+          movingBetweenRows = true;
           this.moveStepPosition(step, newStepUid);
         } else {
           this.resetBarYPosition(step);
         }
       }
-      this.dispatchEvent(new CustomEvent("ganttStepMove", {
+      const moveEvent = new CustomEvent("ganttStepMove", {
         detail: {
           uid: step.uid,
           newUid: newStepUid,
@@ -509,7 +525,13 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
           step: step,
           event: event
         }
-      }));
+      });
+      if (movingBetweenRows) {
+        // postpone event dispatching until Lit Element has updated the DOM structure.
+        this.pendingMoveEvents.push(moveEvent);
+      } else {
+        this.dispatchEvent(moveEvent);
+      }
     } else {
       this.dispatchEvent(new CustomEvent("ganttStepResize", {
         detail: {

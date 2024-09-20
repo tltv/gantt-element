@@ -6,6 +6,8 @@ export interface GanttEventsInterface {
     movableStepsBetweenRows: boolean;
     touching: boolean;
     moveElement: HTMLDivElement;
+    pendingMoveEvents: Array<CustomEvent>;
+    firePendingMoveEvents(): void;
     handleTouchStart(event: TouchEvent): void;
     handleMouseDown(event: MouseEvent): void;
 }
@@ -51,8 +53,10 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     resizingFromLeft: boolean;
     insideTapTimeWindow: boolean;
     touchStartTime: number;
+    pendingMoveEvents: Array<CustomEvent>;
     moveElement: HTMLDivElement;
     private isInsideTouchTimeWindow;
+    firePendingMoveEvents(): void;
     handleTouchStart(event: TouchEvent): void;
     private _handleTouchEnd;
     private _doHandleTouchEnd;

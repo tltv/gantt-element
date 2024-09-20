@@ -34,9 +34,20 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         /** autoScrollAreaSize defines size of the area in pixels that enables automatic scrolling. */
         this.autoScrollAreaSize = 5;
         this.insideTapTimeWindow = true;
+        this.pendingMoveEvents = [];
     }
     isInsideTouchTimeWindow() {
         return this.ignoreTouchTimeWindow > 0 && (Date.now() - this.touchStartTime) <= this.ignoreTouchTimeWindow;
+    }
+    firePendingMoveEvents() {
+        let events = [];
+        events.push(...this.pendingMoveEvents);
+        events.forEach(event => {
+            this.pendingMoveEvents.splice(this.pendingMoveEvents.indexOf(event), 1);
+        });
+        events.forEach(event => {
+            this.dispatchEvent(event);
+        });
     }
     // touchstart is fired before mousedown
     handleTouchStart(event) {
@@ -433,18 +444,20 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
             step.end = endDate;
         }
         if (move) {
+            let movingBetweenRows = false;
             if (this.movableStepsBetweenRows) {
                 if (step.substep) {
                     this.resetBarYPosition(step);
                 }
                 else if (step.uid !== newStepUid) {
+                    movingBetweenRows = true;
                     this.moveStepPosition(step, newStepUid);
                 }
                 else {
                     this.resetBarYPosition(step);
                 }
             }
-            this.dispatchEvent(new CustomEvent("ganttStepMove", {
+            const moveEvent = new CustomEvent("ganttStepMove", {
                 detail: {
                     uid: step.uid,
                     newUid: newStepUid,
@@ -453,7 +466,14 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
                     step: step,
                     event: event
                 }
-            }));
+            });
+            if (movingBetweenRows) {
+                // postpone event dispatching until Lit Element has updated the DOM structure.
+                this.pendingMoveEvents.push(moveEvent);
+            }
+            else {
+                this.dispatchEvent(moveEvent);
+            }
         }
         else {
             this.dispatchEvent(new CustomEvent("ganttStepResize", {
