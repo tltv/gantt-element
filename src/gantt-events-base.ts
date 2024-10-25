@@ -549,18 +549,19 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) implemen
     // avoid editing this._steps directly here (let LitElement do it automatically when DOM structure changes)
     let steps = [...this._steps];
     let movedOverStep = steps.find(step => step.uid === newStepUid);
-    let movingOverSiblingBelow = steps.indexOf(step) + 1 === steps.indexOf(movedOverStep);
+    let fromIndex = steps.indexOf(step);
+    let toIndex = steps.indexOf(movedOverStep);
     if (movedOverStep) {
       let insertBeforeStep;
-      if(steps.indexOf(movedOverStep) + 1 >= steps.length) {
+      if(toIndex + 1 >= steps.length) {
         // move after the last step
         insertBeforeStep = null;
-      } else if(movingOverSiblingBelow) {
-        insertBeforeStep = steps[steps.indexOf(movedOverStep) + 1];
+      } else if(fromIndex <= toIndex) {
+        insertBeforeStep = steps[toIndex + 1];
       } else {
         insertBeforeStep = movedOverStep;
       }
-      steps.splice(steps.indexOf(step), 1);
+      steps.splice(fromIndex, 1);
       this.removeChild(step);
       this.insertBefore(step, insertBeforeStep);
     }
