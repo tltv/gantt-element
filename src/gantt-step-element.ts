@@ -111,6 +111,7 @@ export class GanttStepElement extends GanttSubStepsBase {
         return html`
         <div class="step-label" part="step-label">${this.caption}</div>
         <slot @slotchange=${this.handleSlotchange}></slot>
+        <slot name="step-content" @slotchange=${this.handleSlotchange}></slot>
         `;
     }
 
