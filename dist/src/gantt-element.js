@@ -95,6 +95,7 @@ export let GanttElement = class GanttElement extends BackgroundGridMixin(GanttEv
       <div id="container">
         <div id="content">
           <slot @slotchange=${this.handleSlotchange}></slot>
+          <slot name="step-content" @slotchange=${this.handleSlotchange}></slot>
         </div>
       </div>
       <div id="mv-el" style="display: none;"></div>

@@ -6,8 +6,8 @@
   "module": "gantt-element.js",
   "dependencies": {
     "@types/resize-observer-browser": "^0.1.5",
-    "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.0",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.0.0",
     "lit": "^2.8.0",
     "tltv-timeline-element": "^1.0.20"
   },
