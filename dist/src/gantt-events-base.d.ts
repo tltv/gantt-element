@@ -54,6 +54,11 @@ export declare class GanttEventsBase extends GanttEventsBase_base implements Gan
     insideTapTimeWindow: boolean;
     touchStartTime: number;
     pendingMoveEvents: Array<CustomEvent>;
+    /** true: DOM changes on move events (move metween rows) are postponed for client-server roudtrip. Default: false.
+     * When true, step.style.pointerEvents is set to = 'none' to avoid user interaction with the step until DOM structure
+     * is updated after move event is dispatched and handled. Handler should set it back to 'auto'.
+     */
+    posponedMoveDOMChanges: boolean;
     moveElement: HTMLDivElement;
     private isInsideTouchTimeWindow;
     firePendingMoveEvents(): void;

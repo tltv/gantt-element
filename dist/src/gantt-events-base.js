@@ -35,6 +35,11 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
         this.autoScrollAreaSize = 5;
         this.insideTapTimeWindow = true;
         this.pendingMoveEvents = [];
+        /** true: DOM changes on move events (move metween rows) are postponed for client-server roudtrip. Default: false.
+         * When true, step.style.pointerEvents is set to = 'none' to avoid user interaction with the step until DOM structure
+         * is updated after move event is dispatched and handled. Handler should set it back to 'auto'.
+         */
+        this.posponedMoveDOMChanges = false;
     }
     isInsideTouchTimeWindow() {
         return this.ignoreTouchTimeWindow > 0 && (Date.now() - this.touchStartTime) <= this.ignoreTouchTimeWindow;
@@ -451,7 +456,14 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
                 }
                 else if (step.uid !== newStepUid) {
                     movingBetweenRows = true;
-                    this.moveStepPosition(step, newStepUid);
+                    if (!this.posponedMoveDOMChanges) {
+                        this.moveStepPosition(step, newStepUid);
+                    }
+                    else {
+                        // disable pointer events on step to avoid user interaction with it until 
+                        // DOM structure is updated after move event is dispatched and handled.
+                        step.style.pointerEvents = 'none';
+                    }
                 }
                 else {
                     this.resetBarYPosition(step);
@@ -467,7 +479,7 @@ export class GanttEventsBase extends GanttTimelineMixin(GanttStepsBase) {
                     event: event
                 }
             });
-            if (movingBetweenRows) {
+            if (movingBetweenRows && !this.posponedMoveDOMChanges) {
                 // postpone event dispatching until Lit Element has updated the DOM structure.
                 this.pendingMoveEvents.push(moveEvent);
             }
